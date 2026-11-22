@@ -483,3 +483,48 @@ WHERE f.fecha = (now() AT TIME ZONE 'America/Mexico_City')::DATE + 1
   );
 
 COMMIT;
+
+-- T20b (TC-23 · HU-009): citas ya realizadas para probar la calificación.
+-- profesor1 (asesor, Bases de Datos) y estudiante2, a las 08:00:
+--   · Realizada hace 3 días  → se puede calificar (ESC-005).
+--   · Realizada hace 8 días  → «Cerrada sin evaluar», sin botón.
+--   · No realizada hace 2 días → sin botón de calificar.
+-- Las fechas se calculan desde el día en que se ejecuta (Ciudad de México).
+BEGIN;
+
+INSERT INTO public.franja_disponibilidad (
+  id_asesor, id_materia, fecha, hora_inicio, modalidad, ubicacion_presencial
+)
+SELECT u.id_usuario, m.id_materia,
+       (now() AT TIME ZONE 'America/Mexico_City')::DATE - datos.dias,
+       TIME '08:00', 'Presencial', datos.ubicacion
+FROM (
+  VALUES
+    (3, 'T20b · Realizada hace 3 días'),
+    (8, 'T20b · Realizada hace 8 días'),
+    (2, 'T20b · No realizada')
+) AS datos(dias, ubicacion)
+JOIN public.usuario AS u
+  ON u.correo_institucional = 'profesor1@pachuca.tecnm.mx'
+JOIN public.asesor_materia AS a
+  ON a.id_asesor = u.id_usuario
+  AND a.estado_autorizacion = 'Aprobada'
+JOIN public.materia AS m
+  ON m.id_materia = a.id_materia
+  AND m.nombre_materia = 'Bases de Datos'
+ON CONFLICT (id_asesor, fecha, hora_inicio) DO NOTHING;
+
+INSERT INTO public.solicitud_asesoria (id_estudiante, id_disponibilidad, estado)
+SELECT est.id_usuario, f.id_disponibilidad,
+       CASE WHEN f.ubicacion_presencial = 'T20b · No realizada'
+            THEN 'No realizada' ELSE 'Realizada' END
+FROM public.franja_disponibilidad AS f
+JOIN public.usuario AS est
+  ON est.correo_institucional = 'estudiante2@pachuca.tecnm.mx'
+WHERE f.ubicacion_presencial LIKE 'T20b ·%'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.solicitud_asesoria AS s
+    WHERE s.id_disponibilidad = f.id_disponibilidad
+  );
+
+COMMIT;

@@ -134,9 +134,15 @@ async function iniciarPaginaProtegida(...roles) {
 
   if (roles.length > 0 && !exigirRol(...roles)) return null;
 
-  // RF-007 / RN-09: actualizar asesorías vencidas en cada carga.
-  // Si la función no se puede llamar desde el cliente, mostrará el error;
-  // en ese caso se documenta y el llamado pasa a las operaciones.
+  // T23 · TC-24 · RF-007 / RN-05 / RN-09: vencimientos automáticos.
+  // Se ejecuta ANTES de que la página consulte cualquier vista, para que los
+  // estados mostrados estén al día: Pendiente a 24 h o menos -> Caducada (libera
+  // la franja y notifica a ambos) y Aceptada sin cerrar 48 h después -> Sin registro.
+  // Lo usan panel.html, buscar.html, agenda.html y solicitudes.html (todas llaman
+  // a iniciarPaginaProtegida() antes de sus consultas). Las operaciones
+  // solicitar_asesoria, resolver_solicitud, cancelar_asesoria y marcar_resultado
+  // también ejecutan PERFORM procesar_vencimientos() al inicio (sql/esquema.sql).
+  // Permiso: GRANT EXECUTE ON FUNCTION procesar_vencimientos() TO authenticated.
   await ejecutar('procesar_vencimientos');
 
   pintarCabecera();
