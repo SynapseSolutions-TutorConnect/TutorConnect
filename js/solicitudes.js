@@ -614,27 +614,25 @@ function tarjetaCita(c, papel, tipo) {
     envoltura.prepend(boton);
     acciones.appendChild(envoltura);
   } else {
-    aviso.remove();
-    // Ventana de 7 días para calificar cuando el asesor marcó Realizada (T20 / HU-009)
+    // Ventana de 7 días para calificar cuando el asesor marcó Realizada (T20b · HU-009)
     if (papel === 'Estudiante' && c.puede_calificar) {
+      aviso.textContent = `Puedes calificar hasta el ${fechaLimiteCalificacion(c)}`;
       const btnCalificar = document.createElement('button');
       btnCalificar.type = 'button';
-      btnCalificar.textContent = '★ Calificar';
+      btnCalificar.textContent = '★ Calificar asesoría';
       btnCalificar.className = 'px-4 py-2 bg-[#1B396A] hover:bg-[#13274A] text-white text-xs font-semibold rounded-lg shadow-sm transition';
-      btnCalificar.onclick = () => {
-        if (typeof window.abrirModalCalificar === 'function') {
-          window.abrirModalCalificar(c);
-        } else {
-          mostrarExito('Ventana de calificación activa (7 días).');
-        }
-      };
+      btnCalificar.onclick = () => abrirModalEstrellas(c);
       acciones.appendChild(btnCalificar);
     } else if (c.puntuacion) {
+      // Evaluada: muestra las estrellas que puso el estudiante
+      aviso.remove();
       const spanCalif = document.createElement('span');
-      spanCalif.className = 'text-xs font-bold text-amber-600';
-      spanCalif.textContent = `★ ${c.puntuacion} / 5`;
+      spanCalif.className = 'text-base font-bold text-amber-500 tracking-wide';
+      spanCalif.title = `${c.puntuacion} de 5 estrellas`;
+      spanCalif.textContent = '★'.repeat(c.puntuacion) + '☆'.repeat(5 - c.puntuacion);
       acciones.appendChild(spanCalif);
     } else {
+      aviso.remove();
       acciones.remove();
     }
   }
@@ -666,13 +664,20 @@ async function listarMisCitas() {
   const grupos = {
     pendiente: data.filter((c) => c.estado === 'Pendiente'),
     proxima: data.filter((c) => c.estado === 'Aceptada' && esFutura(c)),
+    // T20b: citas ya cerradas por el asesor (Realizada / No realizada)
+    completada: data.filter((c) => c.estado === 'Realizada' || c.estado === 'No realizada'),
   };
-  grupos.historial = data.filter((c) => !grupos.pendiente.includes(c) && !grupos.proxima.includes(c));
+  grupos.historial = data.filter((c) => !grupos.pendiente.includes(c)
+    && !grupos.proxima.includes(c) && !grupos.completada.includes(c));
 
-  const paneles = { pendiente: 'est-pendientes', proxima: 'est-proximas', historial: 'est-historial' };
+  const paneles = {
+    pendiente: 'est-pendientes', proxima: 'est-proximas',
+    completada: 'est-completadas', historial: 'est-historial',
+  };
   const vacios = {
     pendiente: 'No tienes solicitudes pendientes',
     proxima: 'No tienes citas próximas',
+    completada: 'Aún no tienes asesorías completadas',
     historial: 'Tu historial está vacío',
   };
 
@@ -755,9 +760,121 @@ async function cancelarCita(id, boton) {
   }
 }
 
+// =====================================================================
+// T20b · TC-23 · HU-009 · Calificar la asesoría de 1 a 5 estrellas
+// =====================================================================
+let citaCalificar = null;   // cita que se está calificando
+let estrellasElegidas = 0;  // valor elegido en el modal (0 = ninguno)
+
+// Fecha límite para calificar: fin de la sesión + 7 días (la vista la calcula)
+function fechaLimiteCalificacion(c) {
+  const limite = c.fecha_limite_calificacion
+    ? new Date(c.fecha_limite_calificacion)
+    : new Date(new Date(`${c.fecha}T${c.hora_inicio}`).getTime() + (60 + 7 * 24 * 60) * 60 * 1000);
+  return limite.toLocaleString('es-MX', {
+    weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+  });
+}
+
+// Pinta las estrellas: resalta hasta el valor indicado
+function pintarEstrellas(valor) {
+  document.querySelectorAll('#estrellas .estrella').forEach((e) => {
+    const v = Number(e.dataset.valor);
+    e.classList.toggle('text-amber-400', v <= valor);
+    e.classList.toggle('text-slate-300', v > valor);
+    e.setAttribute('aria-checked', String(v === estrellasElegidas));
+    e.tabIndex = (v === (estrellasElegidas || 1)) ? 0 : -1;
+  });
+}
+
+// Elige un valor de 1 a 5 y habilita «Enviar calificación»
+function elegirEstrellas(valor) {
+  estrellasElegidas = valor;
+  pintarEstrellas(valor);
+  document.getElementById('estrellas-texto').textContent = `${valor} de 5 estrellas`;
+  document.getElementById('btn-enviar-estrellas').disabled = !(valor >= 1 && valor <= 5);
+}
+
+// abrirModalEstrellas(id): abre FORM-003 para la cita indicada (objeto o id)
+function abrirModalEstrellas(cita) {
+  citaCalificar = cita;
+  estrellasElegidas = 0;
+  document.getElementById('estrellas-detalle').textContent =
+    `${cita.asesor} • ${cita.nombre_materia} • ${formatearFecha(cita.fecha)} ${formatearHora(cita.hora_inicio)}`;
+  document.getElementById('estrellas-texto').textContent = 'Elige de 1 a 5 estrellas';
+  document.getElementById('btn-enviar-estrellas').disabled = true;
+  pintarEstrellas(0);
+  const modal = document.getElementById('modal-estrellas');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.querySelector('#estrellas .estrella[data-valor="1"]').focus();
+}
+
+function cerrarModalEstrellas() {
+  const modal = document.getElementById('modal-estrellas');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  citaCalificar = null;
+  estrellasElegidas = 0;
+}
+
+// calificar(id, puntuacion): guarda la evaluación; los mensajes de la BD se muestran tal cual
+async function calificar(id, puntuacion, boton) {
+  mostrarCargando(boton, true);
+  try {
+    const { error } = await db.rpc('calificar_asesoria', { p_id: id, p_puntuacion: puntuacion });
+    cerrarModalEstrellas();
+    if (error) { mostrarError(error.message); return; }
+    mostrarExito('Gracias por tu calificación');
+    await recargarCitas();
+  } finally {
+    mostrarCargando(boton, false);
+  }
+}
+
+// Conecta el modal de estrellas (una sola vez)
+let estrellasListas = false;
+function prepararEstrellas() {
+  if (estrellasListas || !document.getElementById('modal-estrellas')) return;
+  estrellasListas = true;
+
+  const estrellas = [...document.querySelectorAll('#estrellas .estrella')];
+  estrellas.forEach((e) => {
+    const v = Number(e.dataset.valor);
+    e.addEventListener('mouseenter', () => pintarEstrellas(v));
+    e.addEventListener('focus', () => pintarEstrellas(Math.max(v, estrellasElegidas)));
+    e.addEventListener('click', () => elegirEstrellas(v));
+    // Teclado: flechas para moverse, Enter/Espacio para elegir
+    e.addEventListener('keydown', (ev) => {
+      let destino = null;
+      if (ev.key === 'ArrowRight' || ev.key === 'ArrowUp') destino = Math.min(5, v + 1);
+      if (ev.key === 'ArrowLeft' || ev.key === 'ArrowDown') destino = Math.max(1, v - 1);
+      if (destino) {
+        ev.preventDefault();
+        elegirEstrellas(destino);
+        estrellas[destino - 1].focus();
+      }
+    });
+  });
+  document.getElementById('estrellas').addEventListener('mouseleave', () => pintarEstrellas(estrellasElegidas));
+
+  document.getElementById('btn-cancelar-estrellas').onclick = cerrarModalEstrellas;
+  document.getElementById('btn-enviar-estrellas').onclick = (ev) => {
+    if (!citaCalificar || estrellasElegidas < 1 || estrellasElegidas > 5) return;
+    calificar(citaCalificar.id_solicitud_asesoria, estrellasElegidas, ev.currentTarget);
+  };
+  document.getElementById('modal-estrellas').addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') cerrarModalEstrellas();
+  });
+}
+
+// Compatibilidad con el gancho que dejó T20a
+window.abrirModalCalificar = abrirModalEstrellas;
+
 // Arranque del estudiante: solicitudes.html llama a iniciarMisCitasEstudiante()
 async function iniciarMisCitasEstudiante() {
   prepararDialogos();
+  prepararEstrellas();
   estudianteIniciado = true;
   await listarMisCitas();
 
