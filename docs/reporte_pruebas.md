@@ -41,8 +41,21 @@ Cada fila se aprueba únicamente cuando pasan todos sus subcasos.
 | RNF-001 | Gamaliel | Sesión de estudiante en el sitio publicado | Intentar escritura directa desde consola y registrar error completo | Pendiente | Escritura rechazada por permisos | Pendiente; un error de campos obligatorios por sí solo no demuestra protección de permisos | ⏳ | Pendiente |
 | RNF-002 | Yael | Matriz y capturas de T24 disponibles | Revisar matriz de 8 pantallas en 360, 768 y 1440 px y estados de interfaz | Pendiente de enlazar matriz | Cumplimiento responsive documentado | Pendiente de revisión | ⏳ | Pendiente |
 | RNF-003 | Yael | Network abierto, conservación del registro y sin limitación de velocidad | Medir las operaciones de los cinco escenarios | Mediciones parciales de ESC-001 en tabla inferior | Cada operación medida ≤ 2000 ms | signup: 1090 ms; registrar_perfil: 297 ms; faltan las demás operaciones | ⏳ | Parcial: 20/11/2026 |
-| Permisos | Carlos | Sesión de estudiante | Intentar acceder a reporte y administración de materias | Pendiente | Acceso y operaciones no autorizadas bloqueados | Pendiente de ejecución | ⏳ | Pendiente |
+| Permisos | Edgar Charrez | Sesión de Estudiante con autorización de asesor; materia de prueba ID 47 activa | Intentar abrir admin.html, consultar reporte_materias y crear, editar y desactivar una materia desde la consola del sitio publicado | Materia PRUEBA_T27_EDITAR_DESACTIVAR, ID 47; carrera ID 1; reporte del 01/11/2026 al 30/11/2026 | Acceso y operaciones administrativas no autorizadas bloqueados | admin.html redirigió al Panel; reporte rechazado con «Solo el coordinador puede ver reportes»; creación rechazada por permisos; edición conservó el nombre original y desactivación conservó estado_activo=true | ✅ | 23/11/2026 |de materias | Pendiente | Acceso y operaciones no autorizadas bloqueados | Pendiente de ejecución | ⏳ | Pendiente |
 
+### Evidencias de Permisos
+
+Ejecutado sobre https://synapsesolutions-tutorconnect.github.io/TutorConnect/.
+
+- [Acceso a Administración](capturas/pruebas/PERMISOS-01-estudiante-admin.png)
+- [Consulta de reportes](capturas/pruebas/PERMISOS-02-estudiante-reporte.png)
+- [Creación de materia](capturas/pruebas/PERMISOS-03-estudiante-crear-materia.png)
+- [Edición de materia](capturas/pruebas/PERMISOS-04-estudiante-editar-materia.png)
+- [Desactivación de materia](capturas/pruebas/PERMISOS-05-estudiante-desactivar-materia.png)
+
+En edición y desactivación se comprobó el estado posterior de la materia; no se interpretó la respuesta HTTP como prueba suficiente de modificación.
+
+Bugs: ninguno detectado en estos intentos. Pendiente de verificación del Scrum Master.
 ### Mediciones por petición
 
 | Escenario | Petición | HTTP | Tiempo | Resultado | Ejecutor | Fecha |
