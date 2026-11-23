@@ -25,7 +25,7 @@ Cada fila se aprueba únicamente cuando pasan todos sus subcasos.
 
 | ID | Responsable | Precondiciones | Pasos | Datos usados | Resultado esperado | Resultado obtenido | Estado | Fecha |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| RN-01 | Carlos | Registro sin sesión | Intentar registro con Gmail | Pendiente | Correo rechazado | Pendiente de ejecución | ⏳ | Pendiente |
+| RN-01 | Edgar Charrez | Sin sesión; formulario de registro del sitio publicado | Completar campos válidos e intentar registrar un correo Gmail | Correo de prueba con dominio @gmail.com | Rechazar el registro no institucional | Mostró «Acceso restringido a cuentas institucionales» y no permitió continuar | ✅ | 23/11/2026 | rechazado | Pendiente de ejecución | ⏳ | Pendiente |
 | RN-02 | Ximena | Usuario sin materia aprobada | Intentar publicar una franja | Pendiente | Publicación rechazada | Pendiente de ejecución | ⏳ | Pendiente |
 | RN-03 | Gamaliel | Asesor con bloque y estudiante con cita activa | Intentar duplicar bloque y solicitar otra cita a la misma hora | Pendiente | Ambos solapamientos rechazados | Pendiente de ejecución | ⏳ | Pendiente |
 | RN-04 | Yael | Dos estudiantes y franja libre | Intentar doble reserva; comprobar liberación por rechazo y por cancelación | Pendiente | Segunda reserva rechazada; franja liberada en ambos casos | Pendiente de ejecución | ⏳ | Pendiente |
@@ -34,6 +34,7 @@ Cada fila se aprueba únicamente cuando pasan todos sus subcasos.
 | RN-07 | Carlos | Citas Realizadas dentro y fuera de 7 días | Calificar dentro del plazo, repetir e intentar fuera del plazo; revisar ausencia de texto | Pendiente | Solo una evaluación dentro de 7 días y sin texto | Pendiente de ejecución | ⏳ | Pendiente |
 | RN-09 / RN-10 | Yael | Cita sin cerrar desde hace más de 48 h y casos a menos de 24 h | Procesar vencimiento; intentar publicar y solicitar dentro del límite | Pendiente | Sin registro; publicación y solicitud rechazadas | Pendiente de ejecución | ⏳ | Pendiente |
 
+Evidencia RN-01: [Rechazo de correo no institucional](capturas/pruebas/RN-01-correo-no-institucional.png).
 ## 3. Requisitos no funcionales y permisos
 
 | ID | Responsable | Precondiciones | Pasos | Datos usados | Resultado esperado | Resultado obtenido | Estado | Fecha |
@@ -41,7 +42,7 @@ Cada fila se aprueba únicamente cuando pasan todos sus subcasos.
 | RNF-001 | Gamaliel | Sesión de estudiante en el sitio publicado | Intentar escritura directa desde consola y registrar error completo | Pendiente | Escritura rechazada por permisos | Pendiente; un error de campos obligatorios por sí solo no demuestra protección de permisos | ⏳ | Pendiente |
 | RNF-002 | Yael | Matriz y capturas de T24 disponibles | Revisar matriz de 8 pantallas en 360, 768 y 1440 px y estados de interfaz | Pendiente de enlazar matriz | Cumplimiento responsive documentado | Pendiente de revisión | ⏳ | Pendiente |
 | RNF-003 | Yael | Network abierto, conservación del registro y sin limitación de velocidad | Medir las operaciones de los cinco escenarios | Mediciones parciales de ESC-001 en tabla inferior | Cada operación medida ≤ 2000 ms | signup: 1090 ms; registrar_perfil: 297 ms; faltan las demás operaciones | ⏳ | Parcial: 20/11/2026 |
-| Permisos | Edgar Charrez | Sesión de Estudiante con autorización de asesor; materia de prueba ID 47 activa | Intentar abrir admin.html, consultar reporte_materias y crear, editar y desactivar una materia desde la consola del sitio publicado | Materia PRUEBA_T27_EDITAR_DESACTIVAR, ID 47; carrera ID 1; reporte del 01/11/2026 al 30/11/2026 | Acceso y operaciones administrativas no autorizadas bloqueados | admin.html redirigió al Panel; reporte rechazado con «Solo el coordinador puede ver reportes»; creación rechazada por permisos; edición conservó el nombre original y desactivación conservó estado_activo=true | ✅ | 23/11/2026 |de materias | Pendiente | Acceso y operaciones no autorizadas bloqueados | Pendiente de ejecución | ⏳ | Pendiente |
+| Permisos | Edgar Charrez | Sesión de Estudiante con autorización de asesor; materia de prueba ID 47 activa | Intentar abrir admin.html, consultar reporte_materias y crear, editar y desactivar una materia desde la consola del sitio publicado | Materia PRUEBA_T27_EDITAR_DESACTIVAR, ID 47; carrera ID 1; reporte del 01/11/2026 al 30/11/2026 | Acceso y operaciones administrativas no autorizadas bloqueados | admin.html redirigió al Panel; reporte rechazado con «Solo el coordinador puede ver reportes»; creación rechazada por permisos; edición conservó el nombre original y desactivación conservó estado_activo=true | ✅ | 23/11/2026 
 
 ### Evidencias de Permisos
 
@@ -102,11 +103,11 @@ resultado esperado, resultado obtenido, captura y prioridad.
 | Concepto | Cantidad |
 | --- | ---: |
 | Pruebas principales planificadas | 17 |
-| Aprobadas en ejecución, pendientes de validación del Scrum Master | 1 |
+| Aprobadas en ejecución, pendientes de validación del Scrum Master | 3 |
 | Fallidas registradas | 0 |
-| Pendientes | 16 |
+| Pendientes | 14 |
 
-Comprobación: 1 + 0 + 16 = 17.
+Comprobación: 3 + 0 + 14 = 17.
 
 T27 continúa en curso. Las mediciones parciales no se cuentan como pruebas
 principales adicionales.
