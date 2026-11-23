@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/t24-responsive.css?v=1">
   <script src="js/t24-navegacion.js?v=1" defer></script>
   <link rel="stylesheet" href="css/t24-cuatro.css?v=1">
+<link rel="stylesheet" href="css/t24-integracion-qa.css?v=1">
 </head>
 <body class="t24-lote t24-postulacion bg-[#F8FAFC] flex min-h-screen w-full m-0 p-0 overflow-x-hidden flex-col">
 
@@ -123,9 +124,10 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
-  <script src="js/sesion.js"></script>
+  <script src="js/sesion.js?v=t24-qa-1"></script>
+<script src="js/notificaciones.js?v=t24-qa-1"></script>
   <script src="js/catalogo.js"></script>
-<script src="js/t24-cuatro.js?v=1"></script>
+<script src="js/t24-cuatro.js?v=t24-qa-1"></script>
   <script>
 t24Arrancar(['Estudiante','Profesor'], async()=>{await iniciarPostulacion();});
 </script>

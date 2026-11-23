@@ -332,6 +332,99 @@ ON CONFLICT (id_asesor, fecha, hora_inicio) DO NOTHING;
 
 COMMIT;
 
+-- =====================================================================
+-- T20 (CU-005): Citas de prueba Aceptadas con fecha y hora ya terminadas
+-- dentro de las últimas 48 horas (para probar Realizada y No realizada).
+-- =====================================================================
+BEGIN;
+
+-- 1. Franjas de disponibilidad de ayer (ya concluidas, dentro de 48 h)
+INSERT INTO public.franja_disponibilidad (
+  id_asesor,
+  id_materia,
+  fecha,
+  hora_inicio,
+  modalidad,
+  ubicacion_presencial
+)
+SELECT
+  u.id_usuario,
+  m.id_materia,
+  (now() AT TIME ZONE 'America/Mexico_City')::DATE - 1,
+  datos.hora,
+  datos.modalidad,
+  datos.ubicacion
+FROM (
+  VALUES
+    (
+      'tutor1@pachuca.tecnm.mx',
+      'Fundamentos de Programación',
+      TIME '12:00',
+      'Virtual',
+      NULL
+    ),
+    (
+      'tutor1@pachuca.tecnm.mx',
+      'Fundamentos de Programación',
+      TIME '13:00',
+      'Presencial',
+      'Aula de prueba A1'
+    )
+) AS datos(correo, materia, hora, modalidad, ubicacion)
+JOIN public.usuario AS u
+  ON u.correo_institucional = datos.correo
+JOIN public.carrera AS c
+  ON c.nombre_carrera = 'Ingeniería en Sistemas Computacionales'
+JOIN public.materia AS m
+  ON m.nombre_materia = datos.materia
+  AND m.id_carrera = c.id_carrera
+  AND m.estado_activo
+ON CONFLICT (id_asesor, fecha, hora_inicio) DO NOTHING;
+
+-- 2. Solicitudes en estado 'Aceptada' sobre las franjas ya terminadas
+INSERT INTO public.solicitud_asesoria (
+  id_estudiante,
+  id_disponibilidad,
+  estado,
+  url_videollamada
+)
+SELECT
+  est.id_usuario,
+  f.id_disponibilidad,
+  'Aceptada',
+  datos.url
+FROM (
+  VALUES
+    (
+      'tutor1@pachuca.tecnm.mx',
+      TIME '12:00',
+      'l23021613@pachuca.tecnm.mx',
+      'https://meet.google.com/prueba-cierre-t20'
+    ),
+    (
+      'tutor1@pachuca.tecnm.mx',
+      TIME '13:00',
+      'l23021613@pachuca.tecnm.mx',
+      NULL
+    )
+) AS datos(correo_asesor, hora, correo_estudiante, url)
+JOIN public.usuario AS ase
+  ON ase.correo_institucional = datos.correo_asesor
+JOIN public.franja_disponibilidad AS f
+  ON f.id_asesor = ase.id_usuario
+  AND f.fecha = (now() AT TIME ZONE 'America/Mexico_City')::DATE - 1
+  AND f.hora_inicio = datos.hora
+JOIN public.usuario AS est
+  ON est.correo_institucional = datos.correo_estudiante
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM public.solicitud_asesoria s
+  WHERE s.id_disponibilidad = f.id_disponibilidad
+    AND s.estado IN ('Pendiente', 'Aceptada')
+);
+
+COMMIT;
+
 
 -- ESC-004 (T17 · TC-20): cita Aceptada a menos de 48 h.
 -- Sirve para comprobar que «Cancelar» aparece deshabilitado
@@ -387,6 +480,51 @@ WHERE f.fecha = (now() AT TIME ZONE 'America/Mexico_City')::DATE + 1
     SELECT 1 FROM public.solicitud_asesoria AS s
     WHERE s.id_disponibilidad = f.id_disponibilidad
       AND s.estado IN ('Pendiente', 'Aceptada')
+  );
+
+COMMIT;
+
+-- T20b (TC-23 · HU-009): citas ya realizadas para probar la calificación.
+-- profesor1 (asesor, Bases de Datos) y estudiante2, a las 08:00:
+--   · Realizada hace 3 días  → se puede calificar (ESC-005).
+--   · Realizada hace 8 días  → «Cerrada sin evaluar», sin botón.
+--   · No realizada hace 2 días → sin botón de calificar.
+-- Las fechas se calculan desde el día en que se ejecuta (Ciudad de México).
+BEGIN;
+
+INSERT INTO public.franja_disponibilidad (
+  id_asesor, id_materia, fecha, hora_inicio, modalidad, ubicacion_presencial
+)
+SELECT u.id_usuario, m.id_materia,
+       (now() AT TIME ZONE 'America/Mexico_City')::DATE - datos.dias,
+       TIME '08:00', 'Presencial', datos.ubicacion
+FROM (
+  VALUES
+    (3, 'T20b · Realizada hace 3 días'),
+    (8, 'T20b · Realizada hace 8 días'),
+    (2, 'T20b · No realizada')
+) AS datos(dias, ubicacion)
+JOIN public.usuario AS u
+  ON u.correo_institucional = 'profesor1@pachuca.tecnm.mx'
+JOIN public.asesor_materia AS a
+  ON a.id_asesor = u.id_usuario
+  AND a.estado_autorizacion = 'Aprobada'
+JOIN public.materia AS m
+  ON m.id_materia = a.id_materia
+  AND m.nombre_materia = 'Bases de Datos'
+ON CONFLICT (id_asesor, fecha, hora_inicio) DO NOTHING;
+
+INSERT INTO public.solicitud_asesoria (id_estudiante, id_disponibilidad, estado)
+SELECT est.id_usuario, f.id_disponibilidad,
+       CASE WHEN f.ubicacion_presencial = 'T20b · No realizada'
+            THEN 'No realizada' ELSE 'Realizada' END
+FROM public.franja_disponibilidad AS f
+JOIN public.usuario AS est
+  ON est.correo_institucional = 'estudiante2@pachuca.tecnm.mx'
+WHERE f.ubicacion_presencial LIKE 'T20b ·%'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.solicitud_asesoria AS s
+    WHERE s.id_disponibilidad = f.id_disponibilidad
   );
 
 COMMIT;

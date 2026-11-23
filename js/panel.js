@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const botonMenu = document.getElementById('btn-menu-panel');
   const menu = document.getElementById('menu-panel-movil');
 
-  campana?.addEventListener('click', () => {
+  if (typeof iniciarCampana !== 'function') campana?.addEventListener('click', () => {
     titulo?.scrollIntoView({ block: 'center' });
     titulo?.focus({ preventScroll: true });
   });

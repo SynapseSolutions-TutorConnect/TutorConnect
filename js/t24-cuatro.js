@@ -132,7 +132,7 @@ window.T24 = (() => {
       });
     });
     const campana=porId('btn-campana');
-    if(campana) campana.addEventListener('click',()=>location.assign('panel.html'));
+    if(campana && typeof iniciarCampana !== 'function') campana.addEventListener('click',()=>location.assign('panel.html'));
   }
   document.addEventListener('DOMContentLoaded',modales);
   return {lectura,cargando,error,exito,red};

@@ -561,6 +561,10 @@ REVOKE ALL ON v_franjas_disponibles, v_mi_agenda, v_mis_citas, v_postulaciones, 
 GRANT SELECT ON v_franjas_disponibles, v_mi_agenda, v_mis_citas, v_postulaciones, v_promedio_asesor TO authenticated;
 -- notificar() es interna: nadie la llama desde el navegador
 REVOKE EXECUTE ON FUNCTION notificar(UUID, TEXT) FROM PUBLIC, anon, authenticated;
+-- T23 · TC-24: procesar_vencimientos() se llama desde el navegador al cargar las
+-- pantallas (js/sesion.js) para aplicar RN-05 (caducidad 24 h) y RN-09 (Sin registro 48 h).
+-- Opcional: pg_cron cada 15 min -> SELECT cron.schedule('procesar-vencimientos', '*/15 * * * *', 'SELECT procesar_vencimientos()');
+GRANT EXECUTE ON FUNCTION procesar_vencimientos() TO authenticated;
 
 -- ---------------------------------------------------------------------
 -- 7. DATOS INICIALES (ejemplo; ajustar a la reticula real)
