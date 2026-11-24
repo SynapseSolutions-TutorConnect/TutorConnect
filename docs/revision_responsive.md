@@ -47,7 +47,7 @@ funcionales de la pantalla estén terminados.
 | Inicio y registro | [✅](capturas/responsive/index-360.png) | [✅](capturas/responsive/index-768.png) | [✅](capturas/responsive/index-1440.png) | Se revisaron los formularios de inicio de sesión y registro. Evidencias adicionales del registro debajo de esta tabla. |
 | Panel | [✅](capturas/responsive/panel-360.png) | [✅](capturas/responsive/panel-768.png) | [✅](capturas/responsive/panel-1440.png) | Barra inferior en móvil, ajuste de cabecera y distribución de escritorio. |
 | Buscar | [✅](capturas/responsive/buscar-360.png) | [✅](capturas/responsive/buscar-768.png) | [✅](capturas/responsive/buscar-1440.png) | Una columna en móvil, tres columnas y menú lateral en escritorio. |
-| Agenda | [✅](capturas/responsive/agenda-360.png) | [✅](capturas/responsive/agenda-768.png) | [✅](capturas/responsive/agenda-1440.png) | Navegación responsive y tabla con desplazamiento interno. La confirmación de Retirar y el formulario Publicar conservan pendientes. |
+| Agenda | [✅](capturas/responsive/agenda-360.jpeg) | [✅](capturas/responsive/agenda-768.jpeg) | [✅](capturas/responsive/agenda-1440.jpeg) | Navegación responsive y tabla con desplazamiento interno. La confirmación de Retirar y el formulario Publicar conservan pendientes. |
 | Solicitudes | [✅](capturas/responsive/solicitudes-360.png) | [✅](capturas/responsive/solicitudes-768.png) | [✅](capturas/responsive/solicitudes-1440.png) | Se repitieron las capturas después de corregir la carga del script de sesión. |
 | Postulación | [✅](capturas/responsive/postulacion-360.png) | [✅](capturas/responsive/postulacion-768.png) | [✅](capturas/responsive/postulacion-1440.png) | Formulario y tabla revisados en los tres tamaños. |
 | Perfil | [✅](capturas/responsive/perfil-360.png) | [✅](capturas/responsive/perfil-768.png) | [✅](capturas/responsive/perfil-1440.png) | Datos y navegación revisados. Solicitar actualización de datos sigue pendiente. |
@@ -93,8 +93,8 @@ una captura.
 ### Panel
 
 - [Carga](capturas/responsive/panel-carga.png)
-- [Vacío](capturas/responsive/panel-vacio.png)
-- [Error de conexión](capturas/responsive/panel-error-conexion.png)
+- [Vacío](capturas/responsive/panel-recuperacion.png)
+- [Error de conexión](capturas/responsive/panel-errordeconexion.png)
 - [Recuperación](capturas/responsive/panel-recuperacion.png)
 
 ### Buscar
