@@ -6,8 +6,12 @@
   <title>TutorConnect - Mis Solicitudes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="css/t24-responsive.css?v=1">
+  <script src="js/t24-navegacion.js?v=1" defer></script>
+  <link rel="stylesheet" href="css/t24-cuatro.css?v=1">
+<link rel="stylesheet" href="css/t24-integracion-qa.css?v=1">
 </head>
-<body class="bg-[#F8FAFC] flex min-h-screen w-full m-0 p-0 overflow-x-hidden flex-col">
+<body class="t24-lote t24-solicitudes bg-[#F8FAFC] flex min-h-screen w-full m-0 p-0 overflow-x-hidden flex-col">
 
   <!-- Header a todo lo ancho -->
   <header class="bg-[#1B396A] text-white w-full shadow-sm">
@@ -18,7 +22,7 @@
       </div>
 
       <!-- Navegación Responsiva -->
-      <nav class="hidden md:flex space-x-8 text-sm font-medium">
+      <nav id="t24-menu" aria-label="Navegación principal" class="hidden md:flex space-x-8 text-sm font-medium">
         <a href="panel.html" class="text-slate-300 hover:text-white transition">Inicio</a>
         <a href="buscar.html" data-rol="Estudiante" class="text-slate-300 hover:text-white transition">Buscar asesoría</a>
         <a href="solicitudes.html" data-rol="Estudiante,Profesor" class="border-b-2 border-white pb-1 text-white">Mis solicitudes</a>
@@ -39,6 +43,7 @@
         <button id="btn-cerrar-sesion" class="hidden sm:inline-block text-xs font-semibold text-slate-200 hover:text-white border border-slate-400 hover:border-white rounded-lg px-3 py-1.5 transition">
           Cerrar sesión
         </button>
+        <button id="t24-menu-boton" type="button" class="t24-menu-boton" aria-label="Abrir menú" aria-expanded="false" aria-controls="t24-menu">☰</button>
       </div>
     </div>
   </header>
@@ -60,19 +65,26 @@
         <button type="button" data-pestana="est-proximas" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 transition">
           Próximas (<span id="contador-est-proximas">0</span>)
         </button>
+        <!-- T20b · HU-009: citas Realizadas / No realizadas, con «Calificar asesoría» -->
+        <button type="button" data-pestana="est-completadas" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 transition">
+          Completadas (<span id="contador-est-completadas">0</span>)
+        </button>
         <button type="button" data-pestana="est-historial" class="pb-3 text-sm font-medium text-slate-500 hover:text-slate-700 transition">
           Historial (<span id="contador-est-historial">0</span>)
         </button>
       </div>
 
+      <div id="est-resultados">
       <div id="est-pendientes" data-panel="est" class="space-y-4"></div>
       <div id="est-proximas" data-panel="est" class="space-y-4 hidden"></div>
+      <div id="est-completadas" data-panel="est" class="space-y-4 hidden"></div>
       <div id="est-historial" data-panel="est" class="space-y-4 hidden"></div>
 
       <!-- Estado vacío: el estudiante no tiene ninguna asesoría -->
       <div id="est-vacio" class="hidden bg-white p-10 rounded-xl border border-slate-200 shadow-sm text-center">
         <p class="text-sm text-slate-500 mb-4">Aún no tienes asesorías</p>
         <a href="buscar.html" class="inline-block px-5 py-2.5 bg-[#1B396A] hover:bg-[#13274A] text-white text-xs font-semibold rounded-lg transition">Buscar una asesoría</a>
+      </div>
       </div>
     </section>
 
@@ -140,6 +152,13 @@
       </section>
     </section>
   </main>
+<nav class="t24-inferior" aria-label="Navegación móvil">
+<a href="panel.html">Inicio</a>
+<a href="buscar.html" data-rol="Estudiante" class="hidden">Buscar</a>
+<a href="solicitudes.html" data-rol="Estudiante,Profesor" class="hidden" aria-current="page">Mis citas</a>
+<a href="admin.html" data-rol="Coordinador" class="hidden">Administración</a>
+<a href="perfil.html">Perfil</a>
+</nav>
 
   <!-- Modal FORM-002: Confirmar enlace de videollamada (Virtual) -->
   <div id="modal-confirmar-enlace" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -176,45 +195,49 @@
     </div>
   </div>
 
-  <!-- Scripts cargados una sola vez en orden -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/sesion.js"></script>
-  <script src="js/notificaciones.js"></script>
-  <script src="js/solicitudes.js"></script>
-  <script>
-    // Una sola sesión compartida por estudiante (T15b/T17) y asesor (T16/T17/T20).
-    // Un tutor par puede visualizar ambos paneles.
-    window.t15bSesionLista = iniciarPaginaProtegida();
-    window.t15bSesionLista.then(async (usuario) => {
-      if (!usuario) return;
+  <!-- ===== Modal FORM-003: calificar con estrellas (T20b · HU-009) ===== -->
+  <div id="modal-estrellas" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <h2 id="estrellas-titulo" class="text-xl font-bold text-slate-900 mb-1">Calificar asesoría</h2>
+      <p id="estrellas-detalle" class="text-xs text-slate-500 mb-5"></p>
 
-      const iniciales = usuario.nombre_completo
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .substring(0, 2)
-        .toUpperCase();
-      const avatar = document.getElementById('avatar-iniciales');
-      if (avatar) {
-        avatar.textContent = iniciales;
-        avatar.title = usuario.nombre_completo;
-      }
+      <!-- 5 estrellas clicables, con hover y teclado (flechas / Enter). Sin caja de texto. -->
+      <div id="estrellas" role="radiogroup" aria-label="Calificación de 1 a 5 estrellas" class="flex justify-center gap-2 mb-2">
+        <button type="button" role="radio" data-valor="1" aria-label="1 estrella" class="estrella text-4xl leading-none text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1B396A] rounded">★</button>
+        <button type="button" role="radio" data-valor="2" aria-label="2 estrellas" class="estrella text-4xl leading-none text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1B396A] rounded">★</button>
+        <button type="button" role="radio" data-valor="3" aria-label="3 estrellas" class="estrella text-4xl leading-none text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1B396A] rounded">★</button>
+        <button type="button" role="radio" data-valor="4" aria-label="4 estrellas" class="estrella text-4xl leading-none text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1B396A] rounded">★</button>
+        <button type="button" role="radio" data-valor="5" aria-label="5 estrellas" class="estrella text-4xl leading-none text-slate-300 focus:outline-none focus:ring-2 focus:ring-[#1B396A] rounded">★</button>
+      </div>
+      <p id="estrellas-texto" class="text-center text-sm text-slate-500 mb-2">Elige de 1 a 5 estrellas</p>
 
-      if (usuario.rol === 'Estudiante') {
-        document.getElementById('t15b-panel-estudiante').hidden = false;
-        if (typeof iniciarMisCitasEstudiante === 'function') {
-          await iniciarMisCitasEstudiante();
-        }
-      }
+      <div class="flex justify-end space-x-3 pt-5 mt-3 border-t border-slate-100">
+        <button type="button" id="btn-cancelar-estrellas" class="px-4 py-2.5 border border-slate-300 text-xs font-semibold rounded-lg hover:bg-slate-50 transition">Cancelar</button>
+        <button type="button" id="btn-enviar-estrellas" disabled class="px-5 py-2.5 bg-[#1B396A] hover:bg-[#13274A] disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-semibold rounded-lg shadow-sm transition">Enviar calificación</button>
+      </div>
+    </div>
+  </div>
 
-      if (usuario.rol === 'Profesor' || await esAsesorAprobado()) {
-        document.getElementById('t16-panel-asesor').hidden = false;
-        if (typeof iniciarSolicitudes === 'function') {
-          await iniciarSolicitudes();
-        }
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/sesion.js?v=t24-qa-1"></script>
+<script src="js/notificaciones.js?v=t24-qa-1"></script>
+<script src="js/solicitudes.js?v=t24-qa-1"></script>
+<script src="js/t24-cuatro.js?v=t24-qa-1"></script>
+<script src="js/t24-integracion-qa.js?v=1"></script>
+<script>
+t24Arrancar([], async usuario=>{
+      const asesor = usuario.rol === 'Profesor' || await esAsesorAprobado({conservarSesionEnError:true});
+      window.t15bSesionLista=Promise.resolve(usuario);
+      const avatar=document.getElementById('avatar-iniciales');
+      if(avatar){avatar.textContent=usuario.nombre_completo.trim().split(/\s+/).map(n=>n[0]).slice(0,2).join('').toUpperCase();avatar.title=usuario.nombre_completo;}
+      if(usuario.rol === 'Estudiante') {
+        document.getElementById('t15b-panel-estudiante').hidden=false;
+        await iniciarMisCitasEstudiante();
       }
-    }).catch((error) => mostrarError(error.message || 'No se pudieron cargar las solicitudes.'));
-  </script>
+      if(asesor){document.getElementById('t16-panel-asesor').hidden=false;await iniciarSolicitudes();}
+    });
+</script>
 </body>
 </html>

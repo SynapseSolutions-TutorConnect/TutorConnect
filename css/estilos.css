@@ -33,3 +33,488 @@ html, body {
   cursor: pointer;
   transition: color 0.2s;
 }
+
+/* T24: navegación y modal de búsqueda */
+.navegacion-movil {
+  display: none;
+}
+
+.pagina-buscar button,
+.pagina-buscar select,
+.pagina-buscar input {
+  min-height: 44px;
+}
+
+.pagina-buscar :is(a, button, input, select):focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.pagina-buscar #modal-solicitar {
+  box-sizing: border-box;
+  width: calc(100% - 2rem);
+  max-width: 32rem;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .pagina-buscar main {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pagina-buscar .navegacion-movil {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: #ffffff;
+    border-top: 1px solid #cbd5e1;
+    box-shadow: 0 -2px 8px rgb(15 23 42 / 8%);
+  }
+
+  .pagina-buscar .navegacion-movil a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 4px;
+    border-radius: 8px;
+    color: #1b396a;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .pagina-buscar .navegacion-movil a[aria-current="page"] {
+    background: #1b396a;
+    color: #ffffff;
+  }
+
+  .pagina-buscar #modal-solicitar {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    padding: 24px 16px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pagina-buscar #modal-solicitar > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pagina-buscar #modal-solicitar > div:last-child button {
+    width: 100%;
+    min-height: 48px;
+  }
+}
+
+/* T24: cabecera y filtros en tableta */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pagina-buscar > header > div {
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .pagina-buscar > header > div > nav {
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .pagina-buscar > header > div > nav > a {
+    margin-left: 0;
+    min-height: 44px;
+    align-content: center;
+  }
+
+  .pagina-buscar #form-filtros {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: 16px;
+  }
+
+  .pagina-buscar #form-filtros > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pagina-buscar #form-filtros input,
+  .pagina-buscar #form-filtros select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pagina-buscar #form-filtros > div:last-child > button {
+    flex: 1;
+    min-width: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+/* T24: búsqueda con navegación lateral fija en escritorio */
+@media (min-width: 1024px) {
+  .pagina-buscar {
+    --ancho-menu: 220px;
+  }
+
+  .pagina-buscar > header > div > nav {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    width: var(--ancho-menu);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 16px;
+    overflow-y: auto;
+    background: #1b396a;
+    border-top: 1px solid rgb(255 255 255 / 20%);
+  }
+
+  .pagina-buscar > header > div > nav > a {
+    margin-left: 0;
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .pagina-buscar > header > div > nav > a:hover {
+    background: rgb(255 255 255 / 12%);
+  }
+
+  .pagina-buscar > main {
+    width: calc(100% - var(--ancho-menu));
+    margin-left: var(--ancho-menu);
+    padding: 32px 24px;
+    min-width: 0;
+  }
+
+  .pagina-buscar #grid-resultados,
+  .pagina-buscar #grid-skeletons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pagina-buscar #grid-resultados > *,
+  .pagina-buscar #grid-skeletons > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Evita comprimir los filtros al reservar espacio al menú */
+  .pagina-buscar #form-filtros {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+  }
+
+  .pagina-buscar #form-filtros > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pagina-buscar #form-filtros input,
+  .pagina-buscar #form-filtros select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pagina-buscar #form-filtros > div:last-child {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+/* T24: detalles accesibles de las tarjetas */
+.pagina-buscar .resumen-franja {
+  min-height: 44px;
+  padding: 12px 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1b396a;
+  border-radius: 8px;
+}
+
+.pagina-buscar .resumen-franja:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.pagina-buscar .contenido-franja {
+  padding: 8px;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina-buscar *,
+  .pagina-buscar *::before,
+  .pagina-buscar *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Indicador de búsqueda en curso */
+#btn-buscar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#btn-buscar:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.spinner-busqueda {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 2px solid rgb(255 255 255 / 40%);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: giro-busqueda 0.8s linear infinite;
+}
+
+@keyframes giro-busqueda {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner-busqueda {
+    animation: none;
+  }
+}
+
+/* T24: navegación móvil del panel */
+.navegacion-movil-panel {
+  display: none;
+}
+
+.pagina-panel :is(a, button):focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.pagina-panel button,
+.pagina-panel #accesos a {
+  min-height: 44px;
+}
+
+.pagina-panel #accesos a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 12px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .pagina-panel main {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pagina-panel .navegacion-movil-panel {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    display: flex;
+    gap: 4px;
+    padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+    background: #fff;
+    border-top: 1px solid #cbd5e1;
+    box-shadow: 0 -2px 8px rgb(15 23 42 / 8%);
+  }
+
+  .pagina-panel .navegacion-movil-panel a {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 12px 4px;
+    border-radius: 8px;
+    color: #1b396a;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .pagina-panel .navegacion-movil-panel a[aria-current="page"] {
+    background: #1b396a;
+    color: #fff;
+  }
+}
+
+/* T24: contenido del panel */
+.pagina-panel main,
+.pagina-panel main > *,
+.pagina-panel #panel-resumen > *,
+.pagina-panel #proximas > * {
+  min-width: 0;
+}
+
+.pagina-panel main {
+  overflow-wrap: anywhere;
+}
+
+.pagina-panel #seccion-proximas > div:first-child {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pagina-panel #seccion-proximas > div:first-child a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Tableta: cabecera en dos filas */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .pagina-panel > header > div {
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .pagina-panel > header > div > nav {
+    order: 3;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .pagina-panel > header > div > nav > a {
+    margin-left: 0;
+    min-height: 44px;
+    align-content: center;
+  }
+
+  .pagina-panel > main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .pagina-panel #panel-resumen,
+  .pagina-panel #seccion-proximas {
+    width: 100%;
+  }
+
+  .pagina-panel #panel-resumen {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: start;
+  }
+
+  .pagina-panel #panel-resumen > * {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+/* Escritorio: menú lateral y cuadrícula de tres columnas */
+@media (min-width: 1024px) {
+  .pagina-panel {
+    --ancho-menu-panel: 220px;
+  }
+
+  .pagina-panel > header > div > nav {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    width: var(--ancho-menu-panel);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px 16px;
+    overflow-y: auto;
+    background: #1b396a;
+    border-top: 1px solid rgb(255 255 255 / 20%);
+  }
+
+  .pagina-panel > header > div > nav > a {
+    margin-left: 0;
+    flex-shrink: 0;
+    min-height: 44px;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .pagina-panel > header > div > nav > a:hover {
+    background: rgb(255 255 255 / 12%);
+  }
+
+  .pagina-panel > main {
+    width: calc(100% - var(--ancho-menu-panel));
+    margin-left: var(--ancho-menu-panel);
+    padding: 32px 24px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    align-content: start;
+    align-items: start;
+  }
+
+  .pagina-panel #panel-resumen {
+    display: contents;
+  }
+
+  .pagina-panel #panel-resumen > * {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .pagina-panel #seccion-proximas {
+    width: 100%;
+  }
+
+  /* Las citas deben caber dentro de su columna */
+  .pagina-panel #proximas > div {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagina-panel #proximas > div > div:last-child,
+  .pagina-panel #proximas a {
+    width: 100%;
+  }
+}
