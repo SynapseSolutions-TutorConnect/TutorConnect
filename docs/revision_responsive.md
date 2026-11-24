@@ -44,7 +44,7 @@ funcionales de la pantalla estén terminados.
 
 | Pantalla | 360 px | 768 px | 1440 px | Observaciones |
 |---|---|---|---|---|
-| Inicio y registro | [✅](capturas/responsive/index-360.png) | [✅](capturas/responsive/index-768.png) | [✅](capturas/responsive/index-1440.png) | Se revisaron los formularios de inicio de sesión y registro. Evidencias adicionales del registro debajo de esta tabla. |
+| Inicio y registro | [✅](capturas/responsive/index-360.jpeg) | [✅](capturas/responsive/index-768.jpeg) | [✅](capturas/responsive/index-1440.jpeg) | Se revisaron los formularios de inicio de sesión y registro. Evidencias adicionales del registro debajo de esta tabla. |
 | Panel | [✅](capturas/responsive/panel-360.png) | [✅](capturas/responsive/panel-768.png) | [✅](capturas/responsive/panel-1440.png) | Barra inferior en móvil, ajuste de cabecera y distribución de escritorio. |
 | Buscar | [✅](capturas/responsive/buscar-360.png) | [✅](capturas/responsive/buscar-768.png) | [✅](capturas/responsive/buscar-1440.png) | Una columna en móvil, tres columnas y menú lateral en escritorio. |
 | Agenda | [✅](capturas/responsive/agenda-360.jpeg) | [✅](capturas/responsive/agenda-768.jpeg) | [✅](capturas/responsive/agenda-1440.jpeg) | Navegación responsive y tabla con desplazamiento interno. La confirmación de Retirar y el formulario Publicar conservan pendientes. |
@@ -55,9 +55,9 @@ funcionales de la pantalla estén terminados.
 
 ### Evidencias adicionales del registro
 
-- [Registro en 360 px](capturas/responsive/index-registro-360.png)
-- [Registro en 768 px](capturas/responsive/index-registro-768.png)
-- [Registro en 1440 px](capturas/responsive/index-registro-1440.png)
+- [Registro en 360 px](capturas/responsive/index-registro-360.jpeg)
+- [Registro en 768 px](capturas/responsive/index-registro-768.jpeg)
+- [Registro en 1440 px](capturas/responsive/index-registro-1440.jpeg)
 
 ## Estados de interfaz
 
@@ -86,9 +86,9 @@ una captura.
 
 ### Inicio y registro
 
-- [Carga de carreras](capturas/responsive/index-carga.png)
-- [Error de conexión](capturas/responsive/index-error-conexion.png)
-- [Recuperación](capturas/responsive/index-recuperacion.png)
+- [Carga de carreras](capturas/responsive/index-carga.jpeg)
+- [Error de conexión](capturas/responsive/index-error-conexion.jpeg)
+- [Recuperación](capturas/responsive/index-recuperacion.jpeg)
 
 ### Panel
 
