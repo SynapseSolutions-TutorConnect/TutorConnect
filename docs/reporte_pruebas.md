@@ -26,7 +26,7 @@ Cada fila se aprueba únicamente cuando pasan todos sus subcasos.
 | ID | Responsable | Precondiciones | Pasos | Datos usados | Resultado esperado | Resultado obtenido | Estado | Fecha |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | RN-01 | Edgar Charrez | Sin sesión; formulario de registro del sitio publicado | Completar campos válidos e intentar registrar un correo Gmail | Correo de prueba con dominio @gmail.com | Rechazar el registro no institucional | Mostró «Acceso restringido a cuentas institucionales» y no permitió continuar | ✅ | 23/11/2026 | rechazado | Pendiente de ejecución | ⏳ | Pendiente |
-| RN-02 | Ximena | Usuario sin materia aprobada | Intentar publicar una franja | Pendiente | Publicación rechazada | Pendiente de ejecución | ⏳ | Pendiente |
+| RN-02 | Ximena Alcantara Omaña | Estudiante sin materias aprobadas; profesor autorizado únicamente para materia 41 | Comprobar menú y acceso a Agenda; revisar materias disponibles; intentar publicar sin autorización en SQL con rollback | estudiantet19; profesort19; materias 41 y 5 | Impedir publicación de materias no autorizadas | Estudiante sin Mi agenda y redirigido al Panel; profesor solo ve materia 41; ambos intentos SQL no autorizados rechazados con «No tienes autorización para asesorar esta materia.» | ✅ | 20/11/2026 |
 | RN-03 | Gamaliel Jiménez | Estudiante con solicitud Pendiente y asesor con bloque existente a la misma hora | Solicitar otra franja simultánea; revisar horas disponibles del asesor; intentar duplicar su bloque en SQL | Franjas 134 y 135; profesores 1 y 2; 26/11/2026 a las 10:00 | Rechazar ambos solapamientos | Segunda solicitud rechazada con «Ya tienes un compromiso agendado a esa misma hora.»; selector del asesor omite las 10:00; insert SQL rechazado con 23505, restricción uq_franja_asesor_bloque | ✅ | 23/11/2026 |
 | RN-04 | Yael | Dos estudiantes y franja libre | Intentar doble reserva; comprobar liberación por rechazo y por cancelación | Pendiente | Segunda reserva rechazada; franja liberada en ambos casos | Pendiente de ejecución | ⏳ | Pendiente |
 | RN-05 | Carlos | Solicitud Pendiente cuyo inicio está a menos de 24 h | Ejecutar el flujo que procesa vencimientos y revisar estado | Pendiente | Solicitud Caducada | Pendiente de ejecución | ⏳ | Pendiente |
@@ -57,6 +57,8 @@ Ejecutado sobre https://synapsesolutions-tutorconnect.github.io/TutorConnect/.
 En edición y desactivación se comprobó el estado posterior de la materia; no se interpretó la respuesta HTTP como prueba suficiente de modificación.
 
 Bugs: ninguno detectado en estos intentos. Pendiente de verificación del Scrum Master.
+
+
 ### Mediciones por petición
 
 | Escenario | Petición | HTTP | Tiempo | Resultado | Ejecutor | Fecha |
@@ -71,6 +73,23 @@ hasta que el panel estuvo listo. RNF-003 permanece pendiente hasta completar
 las mediciones requeridas de los cinco escenarios.
 
 ## 4. Evidencias
+### RN-02
+
+Ejecutora: Ximena Alcantara Omaña. Fecha: 20/11/2026.
+
+Las comprobaciones de interfaz se realizaron sobre GitHub Pages.
+Los intentos de publicación no autorizada se comprobaron adicionalmente
+en SQL Editor, simulando usuarios dentro de transacciones con rollback.
+
+- [Sin acceso Mi agenda](capturas/pruebas/RN-02-1a-sin-mi-agenda.png)
+- [Redirección al Panel](capturas/pruebas/RN-02-1b-redirige-panel.png)
+- [Solo materia aprobada](capturas/pruebas/RN-02-2-solo-materia-aprobada.png)
+- [Publicación sin aprobación rechazada](capturas/pruebas/RN-02-3a-sql-sin-aprobacion.png)
+- [Publicación de otra materia rechazada](capturas/pruebas/RN-02-3b-sql-otra-materia.png)
+
+Resultado aprobado reportado por la ejecutora, pendiente de validación
+del Scrum Master y confirmación de revisión cruzada.
+Bugs reportados: ninguno.
 ### Pruebas aportadas por Gamaliel Jiménez
 
 Ambiente reportado: GitHub Pages de TutorConnect y Supabase.
