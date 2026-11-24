@@ -67,42 +67,168 @@ function pintarAccesos(lista) {
 }
 
 // Citas aceptadas de las próximas 24 h (vista v_mis_citas, columna es_proxima)
+let cargandoProximas = false;
+
 async function pintarProximasCitas() {
-  const { data, error } = await db
-    .from('v_mis_citas')
-    .select('nombre_materia, fecha, hora_inicio, modalidad, ubicacion_presencial, url_videollamada, estudiante, asesor, mi_papel')
-    .eq('es_proxima', true)
-    .order('fecha')
-    .order('hora_inicio');
+  const contenedor = document.getElementById('proximas');
+  if (!contenedor || cargandoProximas) return;
 
-  if (error) {
-    mostrarError(error.message);
-    return;
-  }
-  if (!data.length) return; // se queda el mensaje «No tienes citas…»
+  cargandoProximas = true;
+  contenedor.setAttribute('aria-busy', 'true');
 
-  document.getElementById('proximas').innerHTML = data.map(c => {
-    const conQuien = c.mi_papel === 'Estudiante' ? `Asesor: ${seguro(c.asesor)}` : `Estudiante: ${seguro(c.estudiante)}`;
-    const horario = `${c.hora_inicio.slice(0, 5)} - ${horaFin(c.hora_inicio)}`;
-    const accion = c.modalidad === 'Virtual' && c.url_videollamada
-      ? `<a href="${seguro(c.url_videollamada)}" target="_blank" rel="noopener"
-            class="w-full md:w-auto text-center px-5 py-2.5 bg-[#1B396A] text-white text-xs font-bold rounded-lg shadow-sm hover:bg-[#13274A] transition">
-           Unirse a la videollamada
-         </a>`
-      : `<span class="text-xs text-slate-600">${seguro(c.ubicacion_presencial)}</span>`;
-    return `
-      <div class="bg-white p-6 rounded-xl border-l-4 border-l-emerald-500 border-t border-r border-b border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center space-x-3 mb-2">
-            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider border border-emerald-200">Confirmada</span>
-          </div>
-          <h3 class="text-base font-bold text-slate-900 leading-tight">${seguro(c.nombre_materia)}</h3>
-          <p class="text-sm text-slate-600 mt-1">${conQuien}</p>
-          <p class="text-xs text-slate-500 mt-1">${c.fecha} · ${horario} · ${c.modalidad}</p>
+  const skeleton = `
+    <div aria-hidden="true"
+         class="bg-white p-6 rounded-xl border border-slate-200
+                shadow-sm animate-pulse space-y-4">
+      <div class="h-4 w-24 rounded bg-slate-200"></div>
+      <div class="h-5 w-3/4 rounded bg-slate-200"></div>
+      <div class="h-4 w-full rounded bg-slate-200"></div>
+      <div class="h-11 w-full rounded-lg bg-slate-200"></div>
+    </div>
+  `;
+
+  contenedor.innerHTML = `
+    <p role="status" class="text-sm text-slate-600">
+      Cargando próximas citas…
+    </p>
+    ${skeleton.repeat(3)}
+  `;
+
+  try {
+    const { data, error } = await db
+      .from('v_mis_citas')
+      .select(
+        'nombre_materia, fecha, hora_inicio, modalidad, ' +
+        'ubicacion_presencial, url_videollamada, estudiante, asesor, mi_papel'
+      )
+      .eq('es_proxima', true)
+      .order('fecha')
+      .order('hora_inicio');
+
+    if (error) throw error;
+
+    const citas = data ?? [];
+
+    if (citas.length === 0) {
+      contenedor.innerHTML = `
+        <div class="bg-white p-6 rounded-xl border
+                    border-slate-200 shadow-sm">
+          <p role="status" class="text-sm text-slate-600">
+            No tienes citas en las próximas 24 horas.
+          </p>
         </div>
-        <div class="flex flex-col space-y-2 w-full md:w-auto">${accion}</div>
-      </div>`;
-  }).join('');
+      `;
+      return;
+    }
+
+    // Construye las tarjetas antes de reemplazar el contenido.
+    const tarjetas = document.createDocumentFragment();
+
+    citas.forEach(cita => {
+      const tarjeta = document.createElement('article');
+      tarjeta.className =
+        'bg-white p-6 rounded-xl border border-slate-200 ' +
+        'border-l-4 border-l-emerald-500 shadow-sm space-y-3';
+
+      const estado = document.createElement('span');
+      estado.className =
+        'inline-block bg-emerald-100 text-emerald-800 ' +
+        'text-xs font-bold px-2 py-1 rounded';
+      estado.textContent = 'Confirmada';
+
+      const titulo = document.createElement('h3');
+      titulo.className = 'text-base font-bold text-slate-900';
+      titulo.textContent = cita.nombre_materia;
+
+      const persona = document.createElement('p');
+      persona.className = 'text-sm text-slate-600';
+      persona.textContent = cita.mi_papel === 'Estudiante'
+        ? `Asesor: ${cita.asesor}`
+        : `Estudiante: ${cita.estudiante}`;
+
+      const horario = document.createElement('p');
+      horario.className = 'text-sm text-slate-600';
+      horario.textContent =
+        `${cita.fecha} · ${cita.hora_inicio.slice(0, 5)} - ` +
+        `${horaFin(cita.hora_inicio)} · ${cita.modalidad}`;
+
+      tarjeta.append(estado, titulo, persona, horario);
+
+      if (cita.modalidad === 'Virtual') {
+        let urlValida = null;
+
+        try {
+          const url = new URL(cita.url_videollamada);
+          if (['https:', 'http:'].includes(url.protocol)) {
+            urlValida = url.href;
+          }
+        } catch {
+          // La tarjeta mostrará que el enlace no está disponible.
+        }
+
+        if (urlValida) {
+          const enlace = document.createElement('a');
+          enlace.href = urlValida;
+          enlace.target = '_blank';
+          enlace.rel = 'noopener noreferrer';
+          enlace.className =
+            'inline-flex items-center justify-center w-full min-h-11 ' +
+            'px-4 py-3 bg-[#1B396A] text-white text-sm font-semibold ' +
+            'rounded-lg hover:bg-[#13274A]';
+          enlace.textContent = 'Unirse a la videollamada';
+          tarjeta.appendChild(enlace);
+        } else {
+          const aviso = document.createElement('p');
+          aviso.className = 'text-sm text-slate-600';
+          aviso.textContent = 'Enlace de videollamada no disponible.';
+          tarjeta.appendChild(aviso);
+        }
+      } else {
+        const ubicacion = document.createElement('p');
+        ubicacion.className = 'text-sm text-slate-600';
+        ubicacion.textContent =
+          cita.ubicacion_presencial || 'Ubicación no registrada.';
+        tarjeta.appendChild(ubicacion);
+      }
+
+      tarjetas.appendChild(tarjeta);
+    });
+
+    contenedor.replaceChildren(tarjetas);
+  } catch (error) {
+    const detalle = error?.message || 'Error desconocido';
+    const falloDeRed =
+      !navigator.onLine ||
+      /failed to fetch|networkerror|network request failed|load failed/i.test(detalle);
+
+    contenedor.innerHTML = `
+      <div class="rounded-xl border border-red-300 bg-red-50 p-5">
+        <div role="alert">
+          <h3 class="font-semibold text-red-800">
+            No se pudieron cargar las próximas citas
+          </h3>
+          <p id="error-proximas-mensaje"
+             class="mt-2 text-sm text-red-700"></p>
+        </div>
+        <button id="reintentar-proximas" type="button"
+                class="mt-4 min-h-11 rounded-lg bg-[#1B396A]
+                       px-5 py-3 font-semibold text-white">
+          Reintentar
+        </button>
+      </div>
+    `;
+
+    document.getElementById('error-proximas-mensaje').textContent =
+      falloDeRed
+        ? 'No pudimos conectar con el servidor. Revisa tu conexión y pulsa Reintentar.'
+        : detalle;
+
+    document.getElementById('reintentar-proximas')
+      .addEventListener('click', pintarProximasCitas);
+  } finally {
+    cargandoProximas = false;
+    contenedor.setAttribute('aria-busy', 'false');
+  }
 }
 
 async function cargarPanel() {
@@ -136,3 +262,43 @@ async function cargarPanel() {
 }
 
 document.addEventListener('DOMContentLoaded', cargarPanel);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const campana = document.getElementById('btn-campana');
+  const titulo = document.getElementById('titulo-notificaciones');
+  const botonMenu = document.getElementById('btn-menu-panel');
+  const menu = document.getElementById('menu-panel-movil');
+
+  if (typeof iniciarCampana !== 'function') campana?.addEventListener('click', () => {
+    titulo?.scrollIntoView({ block: 'center' });
+    titulo?.focus({ preventScroll: true });
+  });
+
+  if (!botonMenu || !menu) return;
+
+  function cerrarMenu(devolverFoco = false) {
+    menu.classList.add('hidden');
+    botonMenu.setAttribute('aria-expanded', 'false');
+    botonMenu.setAttribute('aria-label', 'Abrir menú');
+    if (devolverFoco) botonMenu.focus();
+  }
+
+  botonMenu.addEventListener('click', () => {
+    const abrir = botonMenu.getAttribute('aria-expanded') !== 'true';
+    menu.classList.toggle('hidden', !abrir);
+    botonMenu.setAttribute('aria-expanded', String(abrir));
+    botonMenu.setAttribute('aria-label', abrir ? 'Cerrar menú' : 'Abrir menú');
+  });
+
+  document.addEventListener('keydown', evento => {
+    if (evento.key === 'Escape' &&
+        botonMenu.getAttribute('aria-expanded') === 'true') {
+      cerrarMenu(true);
+    }
+  });
+
+  window.matchMedia('(min-width: 768px)')
+    .addEventListener('change', evento => {
+      if (evento.matches) cerrarMenu();
+    });
+});

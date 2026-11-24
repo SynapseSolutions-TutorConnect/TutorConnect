@@ -27,8 +27,10 @@ let usuarioActual = null;
    Con sesión → lee su perfil de la tabla usuario y lo
    guarda en usuarioActual.
    --------------------------------------------------------- */
-async function obtenerUsuario() {
-  const { data: { session } } = await db.auth.getSession();
+async function obtenerUsuario(opciones = {}) {
+  const respuestaSesion = await db.auth.getSession();
+  if (respuestaSesion.error) throw respuestaSesion.error;
+  const session = respuestaSesion.data?.session;
 
   if (!session) {
     window.location.replace('index.html');
@@ -43,6 +45,10 @@ async function obtenerUsuario() {
     .single();
 
   if (error || !data) {
+    if (opciones.conservarSesionEnError) {
+      usuarioActual = null;
+      throw error || new Error('No se encontró el perfil del usuario.');
+    }
     // Hay sesión pero no hay perfil: se cierra para evitar estados raros.
     mostrarError(error ? error.message : 'No se encontró el perfil del usuario.');
     await db.auth.signOut();
@@ -71,7 +77,7 @@ function exigirRol(...roles) {
 // Devuelve true si el usuario tiene al menos una materia aprobada como asesor.
 // La vista v_postulaciones ya filtra por el usuario con sesión
 // (el Coordinador ve todas, por eso a él se le regresa false).
-async function esAsesorAprobado() {
+async function esAsesorAprobado(opciones = {}) {
   if (!usuarioActual || usuarioActual.rol === 'Coordinador') return false;
   const { data, error } = await db
     .from('v_postulaciones')
@@ -79,7 +85,7 @@ async function esAsesorAprobado() {
     .eq('estado_autorizacion', 'Aprobada')
     .limit(1);
 
-  if (error) { mostrarError(error.message); return false; }
+  if (error) { if (opciones.conservarSesionEnError) throw error; mostrarError(error.message); return false; }
   return data.length > 0;
 }
 
@@ -98,7 +104,7 @@ function pintarCabecera() {
    configurarMenu()
    Muestra u oculta opciones según el rol y si es asesor aprobado.
    --------------------------------------------------------- */
-async function configurarMenu() {
+async function configurarMenu(opciones = {}) {
   // Opciones limitadas por rol
   document.querySelectorAll('[data-rol]').forEach((el) => {
     const permitidos = el.dataset.rol.split(',').map((r) => r.trim());
@@ -108,7 +114,7 @@ async function configurarMenu() {
   // Opciones solo para asesores aprobados
   const opcionesAsesor = document.querySelectorAll('[data-asesor]');
   if (opcionesAsesor.length > 0) {
-    const aprobado = await esAsesorAprobado();
+    const aprobado = await esAsesorAprobado(opciones);
     opcionesAsesor.forEach((el) => el.classList.toggle('hidden', !aprobado));
   }
 }
@@ -125,11 +131,16 @@ async function cerrarSesion() {
 /* ---------------------------------------------------------
    iniciarPaginaProtegida(...roles)
    Hace todo en orden al cargar una página protegida:
-   sesión → rol → vencimientos → cabecera → menú → campana → cerrar sesión.
+   sesión → rol → vencimientos → cabecera → menú → cerrar sesión.
    Sin roles = cualquier usuario con sesión puede entrar.
    --------------------------------------------------------- */
 async function iniciarPaginaProtegida(...roles) {
-  const usuario = await obtenerUsuario();
+  return iniciarPaginaProtegidaConOpciones({}, ...roles);
+}
+
+// Perfil utiliza este modo para mostrar Reintentar sin cerrar sesión.
+async function iniciarPaginaProtegidaConOpciones(opciones, ...roles) {
+  const usuario = await obtenerUsuario(opciones);
   if (!usuario) return null;
 
   if (roles.length > 0 && !exigirRol(...roles)) return null;
@@ -146,10 +157,9 @@ async function iniciarPaginaProtegida(...roles) {
   await ejecutar('procesar_vencimientos');
 
   pintarCabecera();
-  await configurarMenu();
+  await configurarMenu(opciones);
 
-  // T21 · RF-011: campana con el contador de avisos sin leer (js/notificaciones.js).
-  // Va después de procesar_vencimientos para contar también los avisos de caducidad.
+  // T21: avisos reales de qa, después del procesamiento de vencimientos.
   if (typeof iniciarCampana === 'function') await iniciarCampana();
 
   const btnSalir = document.getElementById('btn-cerrar-sesion');

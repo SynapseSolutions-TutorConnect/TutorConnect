@@ -6,12 +6,15 @@
   <title>TutorConnect - Iniciar Sesión</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/estilos.css">
-  <script src="js/auth.js" defer></script>
+
+  <link rel="stylesheet" href="css/t24-responsive.css?v=1">
+  <script src="js/t24-navegacion.js?v=1" defer></script>
+  <link rel="stylesheet" href="css/t24-cuatro.css?v=1">
 </head>
-<body class="bg-[#1B396A] flex min-h-screen w-full m-0 p-0 overflow-x-hidden">
-  
+<body class="t24-lote t24-index bg-[#1B396A] flex min-h-screen w-full m-0 p-0 overflow-x-hidden">
+
   <div class="w-full flex flex-col md:flex-row min-h-screen bg-[#1B396A]">
-    
+
     <!-- Panel Izquierdo Institucional (Azul) -->
     <div class="md:w-[55%] p-8 md:p-16 lg:p-20 xl:p-28 text-white flex flex-col justify-center h-full min-h-screen">
       <div class="flex items-center space-x-3 mb-6">
@@ -19,10 +22,10 @@
         <!-- Título principal responsivo escalable (crece con la pantalla) -->
         <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">TutorConnect</h1>
       </div>
-      
+
       <!-- Subtítulo escalable -->
       <p class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium mb-10 text-blue-50">Conecta, aprende y avanza</p>
-      
+
       <!-- Lista de beneficios escalables -->
       <ul class="space-y-4 sm:space-y-6 text-sm sm:text-base md:text-lg lg:text-xl text-slate-100">
         <li class="flex items-center">
@@ -43,7 +46,7 @@
     <!-- Panel Derecho Login (Blanco) -->
     <div class="md:w-[45%] flex flex-col justify-center bg-white h-full min-h-screen border-l border-slate-200">
       <div class="max-w-[440px] w-full mx-auto p-8 sm:p-12 md:p-10">
-        
+
         <!-- ===== Sección: Iniciar sesión (T11 · HU-001) ===== -->
         <section id="seccion-login">
         <!-- Títulos de inicio de sesión escalables -->
@@ -56,7 +59,7 @@
         <form id="form-login" novalidate class="space-y-6">
           <div>
             <label for="login-correo" class="block text-xs sm:text-sm font-semibold text-[#475569] mb-2">Correo institucional</label>
-            <input type="email" id="login-correo" autocomplete="username" placeholder="l20200123@pachuca.tecnm.mx" required 
+            <input type="email" id="login-correo" autocomplete="username" placeholder="l20200123@pachuca.tecnm.mx" required
                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#1B396A] outline-none transition text-sm sm:text-base shadow-sm">
             <!-- Aviso del dominio (se valida al salir del campo, cap. 13.5) -->
             <p id="login-correo-aviso" class="hidden text-xs sm:text-sm text-red-600 mt-2 flex items-center font-semibold tracking-tight">
@@ -64,17 +67,17 @@
               Acceso restringido a cuentas institucionales
             </p>
           </div>
-          
+
           <div>
             <label for="login-password" class="block text-xs sm:text-sm font-semibold text-[#475569] mb-2">Contraseña</label>
-            <input type="password" id="login-password" autocomplete="current-password" required 
+            <input type="password" id="login-password" autocomplete="current-password" required
                    class="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-[#1B396A] outline-none transition text-sm sm:text-base shadow-sm">
           </div>
-          
+
           <button type="submit" id="btn-login" class="w-full disabled:opacity-60 disabled:cursor-not-allowed bg-[#1e3a6a] hover:bg-[#152a4e] text-white font-bold py-3.5 rounded-lg transition mt-4 text-sm sm:text-base shadow-md">
             Iniciar sesión
           </button>
-          
+
           <div class="text-center mt-6">
             <a href="#" id="ir-registro" class="text-sm sm:text-base text-[#0284c7] hover:text-[#0369a1] hover:underline font-medium transition">¿No tienes cuenta? Regístrate</a>
           </div>
@@ -163,10 +166,12 @@
         </section>
       </div>
     </div>
-    
+
   </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/sesion.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/t24-cuatro.js?v=1"></script>
 </body>
 </html>
