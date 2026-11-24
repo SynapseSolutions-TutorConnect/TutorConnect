@@ -51,7 +51,7 @@ funcionales de la pantalla estén terminados.
 | Solicitudes | [✅](capturas/responsive/solicitudes-360.jpeg) | [✅](capturas/responsive/solicitudes-768.jpeg) | [✅](capturas/responsive/solicitudes-1440.jpeg) | Se repitieron las capturas después de corregir la carga del script de sesión. |
 | Postulación | [✅](capturas/responsive/postulacion-360.jpeg) | [✅](capturas/responsive/postulacion-768.jpeg) | [✅](capturas/responsive/postulacion-1440.jpeg) | Formulario y tabla revisados en los tres tamaños. |
 | Perfil | [✅](capturas/responsive/perfil-360.png) | [✅](capturas/responsive/perfil-768.png) | [✅](capturas/responsive/perfil-1440.png) | Datos y navegación revisados. Solicitar actualización de datos sigue pendiente. |
-| Administración | [✅](capturas/responsive/admin-360.png) | [✅](capturas/responsive/admin-768.png) | [✅](capturas/responsive/admin-1440.png) | Tablas de Postulaciones y Catálogo revisadas. El gráfico superior contiene valores fijos. |
+| Administración | [✅](capturas/responsive/admin-360.jpeg) | [✅](capturas/responsive/admin-768.jpeg) | [✅](capturas/responsive/admin-1440.jpeg) | Tablas de Postulaciones y Catálogo revisadas. El gráfico superior contiene valores fijos. |
 
 ### Evidencias adicionales del registro
 
@@ -133,11 +133,11 @@ Se verificó el mensaje:
 
 ### Administración
 
-- [Carga](capturas/responsive/admin-carga.png)
-- [Vacío por filtro sin coincidencias](capturas/responsive/admin-vacio.png)
-- [Error de conexión](capturas/responsive/admin-error-conexion.png)
-- [Recuperación](capturas/responsive/admin-recuperacion.png)
-- [Modal en móvil](capturas/responsive/admin-modal-360.png)
+- [Carga](capturas/responsive/admin-carga.jpeg)
+- [Vacío por filtro sin coincidencias](capturas/responsive/admin-vacio.jpeg)
+- [Error de conexión](capturas/responsive/admin-error-conexion.jpeg)
+- [Recuperación](capturas/responsive/admin-recuperacion.jpeg)
+- [Modal en móvil](capturas/responsive/admin-modal-360.jpeg)
 
 ## Accesibilidad y comportamiento verificados
 
