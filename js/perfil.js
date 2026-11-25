@@ -1,17 +1,14 @@
-// =====================================================================
-// js/perfil.js · Mi perfil (T11 · TC-14 · SCR-008)
-// Requiere: js/supabase.js (db, mostrarError) y js/sesion.js
-// (iniciarPaginaProtegida, usuarioActual, cerrarSesion).
-// El botón «Cerrar sesión» (id="btn-cerrar-sesion") lo conecta sesion.js.
-// =====================================================================
+// T24: perfil con carga, error recuperable y datos opcionales explícitos.
+let perfilCargando = false;
 
-// Iniciales para los círculos de avatar («Laura Gómez» → «LG»)
 function iniciales(nombre) {
-  return nombre.trim().split(/\s+/).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  return String(nombre || '').trim().split(/\s+/).filter(Boolean)
+    .slice(0, 2).map(p => p[0]).join('').toUpperCase();
 }
 
 function escribir(id, valor) {
-  document.getElementById(id).textContent = valor ?? '—';
+  document.getElementById(id).textContent = valor == null || valor === ''
+    ? 'No registrado' : valor;
 }
 
 function mostrarBloque(id, visible) {
@@ -19,62 +16,95 @@ function mostrarBloque(id, visible) {
 }
 
 function estrellas(promedio) {
-  const llenas = Math.round(promedio);
+  const llenas = Math.max(0, Math.min(5, Math.round(Number(promedio) || 0)));
   return '★'.repeat(llenas) + '☆'.repeat(5 - llenas);
 }
 
 async function cargarPerfil() {
-  // Sesión, vencimientos, menú y botón «Cerrar sesión» (sesion.js)
-  const perfil = await iniciarPaginaProtegida();
-  if (!perfil) return;
+  if (perfilCargando) return;
+  perfilCargando = true;
+  const main = document.querySelector('main');
+  const contenido = document.getElementById('perfil-contenido');
+  const carga = document.getElementById('perfil-carga');
+  const errorPanel = document.getElementById('perfil-error');
+  const reintentar = document.getElementById('perfil-reintentar');
+  const devolverFoco = document.activeElement === reintentar;
+  main.setAttribute('aria-busy', 'true');
+  contenido.classList.add('hidden');
+  errorPanel.classList.add('hidden');
+  carga.classList.remove('hidden');
+  reintentar.disabled = true;
+  let exito = false;
 
-  // Nombre de la carrera (relación usuario.id_carrera → carrera)
-  let carrera = null;
-  if (perfil.rol === 'Estudiante' && perfil.id_carrera) {
-    const { data, error } = await db
-      .from('carrera')
-      .select('nombre_carrera')
-      .eq('id_carrera', perfil.id_carrera)
-      .maybeSingle();
-    if (error) mostrarError(error.message);
-    carrera = data?.nombre_carrera;
-  }
+  try {
+    const perfil = await iniciarPaginaProtegidaConOpciones({ conservarSesionEnError: true });
+    if (!perfil) return; // La sesión ausente redirige al login.
 
-  const nombre = perfil.nombre_completo;
-  escribir('perfil-nombre', nombre);
-  escribir('perfil-iniciales', iniciales(nombre));
-  escribir('avatar-iniciales', iniciales(nombre));
-  escribir('perfil-rol', perfil.rol);
-  escribir('perfil-correo', perfil.correo_institucional);
-  escribir('perfil-matricula', perfil.matricula_num_empleado);
+    let carrera = null;
+    if (perfil.rol === 'Estudiante' && perfil.id_carrera) {
+      const respuesta = await db.from('carrera').select('nombre_carrera')
+        .eq('id_carrera', perfil.id_carrera).maybeSingle();
+      if (respuesta.error) throw respuesta.error;
+      carrera = respuesta.data?.nombre_carrera;
+    }
 
-  const esEstudiante = perfil.rol === 'Estudiante';
-  escribir('etiqueta-matricula', esEstudiante ? 'Matrícula / No. Control' : 'Número de empleado');
-  mostrarBloque('bloque-carrera', esEstudiante);
-  mostrarBloque('bloque-semestre', esEstudiante);
-  mostrarBloque('bloque-departamento', !esEstudiante);
+    let promedio = null;
+    if (perfil.rol !== 'Coordinador') {
+      const respuesta = await db.from('v_promedio_asesor')
+        .select('promedio, num_evaluaciones')
+        .eq('id_asesor', perfil.id_usuario).maybeSingle();
+      if (respuesta.error) throw respuesta.error;
+      promedio = respuesta.data;
+    }
 
-  if (esEstudiante) {
-    escribir('perfil-carrera', carrera);
-    escribir('perfil-semestre', perfil.semestre ? `${perfil.semestre}° Semestre` : null);
-  } else {
-    escribir('perfil-departamento', perfil.departamento);
-  }
+    const nombre = perfil.nombre_completo;
+    escribir('perfil-nombre', nombre);
+    escribir('perfil-iniciales', iniciales(nombre));
+    escribir('avatar-iniciales', iniciales(nombre));
+    escribir('perfil-rol', perfil.rol);
+    escribir('perfil-correo', perfil.correo_institucional);
+    escribir('perfil-matricula', perfil.matricula_num_empleado);
 
-  // Promedio público como asesor (vista v_promedio_asesor)
-  if (perfil.rol !== 'Coordinador') {
-    const { data: prom } = await db
-      .from('v_promedio_asesor')
-      .select('promedio, num_evaluaciones')
-      .eq('id_asesor', perfil.id_usuario)
-      .maybeSingle();
+    const estudiante = perfil.rol === 'Estudiante';
+    escribir('etiqueta-matricula', estudiante ? 'Matrícula / No. Control' : 'Número de empleado');
+    mostrarBloque('bloque-carrera', estudiante);
+    mostrarBloque('bloque-semestre', estudiante);
+    mostrarBloque('bloque-departamento', !estudiante);
+    if (estudiante) {
+      escribir('perfil-carrera', carrera);
+      escribir('perfil-semestre', perfil.semestre ? `${perfil.semestre}° Semestre` : null);
+    } else {
+      escribir('perfil-departamento', perfil.departamento);
+    }
 
-    if (prom && prom.num_evaluaciones > 0) {
-      escribir('perfil-promedio',
-        `${estrellas(prom.promedio)} ${prom.promedio} como asesor (${prom.num_evaluaciones} evaluaciones)`);
-      mostrarBloque('perfil-promedio', true);
+    mostrarBloque('perfil-promedio', perfil.rol !== 'Coordinador');
+    escribir('perfil-promedio', promedio && promedio.num_evaluaciones > 0
+      ? `${estrellas(promedio.promedio)} ${promedio.promedio} como asesor (${promedio.num_evaluaciones} evaluaciones)`
+      : 'Sin evaluaciones como asesor.');
+    contenido.classList.remove('hidden');
+    exito = true;
+  } catch (error) {
+    const detalle = error?.message || 'Error desconocido';
+    const sinConexion = !navigator.onLine ||
+      /failed to fetch|networkerror|network request failed|load failed|fetch failed/i.test(detalle);
+    document.getElementById('perfil-error-mensaje').textContent = sinConexion
+      ? 'No pudimos conectar con el servidor. Revisa tu conexión y pulsa Reintentar.'
+      : detalle;
+    errorPanel.classList.remove('hidden');
+  } finally {
+    perfilCargando = false;
+    carga.classList.add('hidden');
+    reintentar.disabled = false;
+    main.setAttribute('aria-busy', 'false');
+    if (devolverFoco) {
+      const destino = exito ? document.getElementById('perfil-nombre') : reintentar;
+      if (exito) destino.setAttribute('tabindex', '-1');
+      destino.focus();
     }
   }
 }
 
-document.addEventListener('DOMContentLoaded', cargarPerfil);
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('perfil-reintentar').addEventListener('click', cargarPerfil);
+  cargarPerfil();
+});

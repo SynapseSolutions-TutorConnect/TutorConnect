@@ -324,8 +324,10 @@ async function cargarFiltroMaterias() {
 }
 
 function limpiarFiltrosBusqueda() {
+  if (document.getElementById('btn-buscar')?.disabled) return;
+
   document.getElementById('form-filtros').reset();
-  window.recargarBusqueda();
+  return window.recargarBusqueda();
 }
 
 // Consulta v_franjas_disponibles y renderiza skeletons, tarjetas o estado vacío
@@ -336,7 +338,31 @@ async function buscarFranjas(filtros = null) {
   const textoContador = document.getElementById('texto-contador');
 
   if (!gridResultados) return;
+    const botonBuscar = document.getElementById('btn-buscar');
 
+  // Evita iniciar otra búsqueda mientras esta sigue pendiente.
+  if (botonBuscar.disabled) return;
+    const controlesFiltros = Array.from(
+    document.querySelectorAll('#form-filtros input, #form-filtros select, #form-filtros button')
+  ).filter(control => control !== botonBuscar);
+
+  const estadosAnteriores = controlesFiltros.map(control => control.disabled);
+
+  controlesFiltros.forEach(control => {
+    control.disabled = true;
+  });
+
+  botonBuscar.disabled = true;
+  botonBuscar.setAttribute('aria-busy', 'true');
+  botonBuscar.innerHTML = `
+    <span class="spinner-busqueda" aria-hidden="true"></span>
+    <span>Procesando…</span>
+  `;
+    const avisoError = document.getElementById('error-busqueda');
+  const mensajeError = document.getElementById('error-busqueda-mensaje');
+
+  avisoError.classList.add('hidden');
+  mensajeError.textContent = '';
   // 1. Mostrar Skeletons
   gridResultados.classList.add('hidden');
   estadoVacio.classList.add('hidden');
@@ -360,17 +386,43 @@ async function buscarFranjas(filtros = null) {
   if (fecha) query = query.eq('fecha', fecha);
   if (modalidad && modalidad !== 'Todas') query = query.eq('modalidad', modalidad);
 
-  const { data, error } = await query;
+  let data;
 
-  // 4. Ocultar Skeletons
-  gridSkeletons.classList.add('hidden');
+  try {
+    const respuesta = await query;
 
-  if (error) {
-    textoContador.textContent = 'Error de conexión';
-    console.error('Error buscando franjas:', error.message);
+    if (respuesta.error) {
+      throw respuesta.error;
+    }
+
+    data = respuesta.data ?? [];
+  } catch (error) {
+    const detalle = error?.message || 'Error desconocido';
+
+    const falloDeRed =
+      !navigator.onLine ||
+      /failed to fetch|networkerror|network request failed|load failed/i.test(detalle);
+
+    textoContador.textContent = 'No se pudo completar la búsqueda';
+
+    mensajeError.textContent = falloDeRed
+      ? 'No pudimos conectar con el servidor. Revisa tu conexión y pulsa Reintentar.'
+      : detalle;
+
+    avisoError.classList.remove('hidden');
+    console.error('Error buscando franjas:', detalle);
     return;
-  }
+    } finally {
+    gridSkeletons.classList.add('hidden');
 
+    controlesFiltros.forEach((control, indice) => {
+      control.disabled = estadosAnteriores[indice];
+    });
+
+    botonBuscar.disabled = false;
+    botonBuscar.removeAttribute('aria-busy');
+    botonBuscar.textContent = 'Buscar';
+  }
   // 5. Evaluar Resultados (Estado vacío conservando flex flex-col items-center)
   if (data.length === 0) {
     estadoVacio.classList.remove('hidden');
@@ -407,7 +459,7 @@ async function buscarFranjas(filtros = null) {
     const estrellas = '★'.repeat(n) + '☆'.repeat(5 - n);
     const renderCalif = numEval > 0
       ? `${estrellas} <span class="text-slate-500 font-normal">${f.promedio} (${numEval})</span>`
-      : `<span class="text-slate-400 font-normal italic">Sin calificaciones</span>`;
+            : `<span class="text-slate-600 font-normal italic">Sin calificaciones</span>`;
 
     // Modalidad y ubicación sanitizada
     const isVirtual = f.modalidad === 'Virtual';
@@ -433,17 +485,27 @@ async function buscarFranjas(filtros = null) {
           
           <div class="mb-4">
             <h3 class="text-sm font-bold text-slate-900 leading-tight line-clamp-1" title="${asesorSeguro}">${asesorSeguro}</h3>
-            <p class="text-[11px] text-amber-500 font-bold mt-1">${renderCalif}</p>
+            <p class="text-[11px] text-amber-700 font-bold mt-1">${renderCalif}</p>
           </div>
           
           <div class="text-xs font-bold text-slate-800 bg-slate-50 px-2.5 py-2 rounded-lg border border-slate-100 mb-4 line-clamp-2" title="${materiaSegura}">
             ${materiaSegura}
           </div>
           
-          <div class="text-xs text-slate-600 mb-5">
-            <p class="flex items-center">🕒 <span class="ml-1">${hrInicio} - ${hrFin} • ${fechaStr}</span></p>
-            ${ubiLinea}
-          </div>
+                  <details class="detalles-franja text-xs text-slate-600 mb-5"
+                   ${window.matchMedia('(min-width: 768px)').matches ? 'open' : ''}>
+            <summary class="resumen-franja">
+              Horario y ubicación
+              <span class="sr-only">de ${asesorSeguro}, ${materiaSegura}</span>
+            </summary>
+            <div class="contenido-franja">
+              <p class="flex items-start">
+                <span aria-hidden="true">🕒</span>
+                <span class="ml-1">${hrInicio} - ${hrFin} • ${fechaStr}</span>
+              </p>
+              ${ubiLinea}
+            </div>
+          </details>
         </div>
         
         <button data-id-franja="${f.id_disponibilidad}" onclick="if(typeof abrirModalSolicitar === 'function') abrirModalSolicitar(this)" class="w-full bg-[#1B396A] hover:bg-[#13274A] text-white text-xs font-semibold py-2.5 rounded-lg transition shadow-sm mt-auto">
@@ -458,3 +520,11 @@ async function buscarFranjas(filtros = null) {
 window.recargarBusqueda = function() {
   return buscarFranjas();
 };
+
+// Ajusta las tarjetas cuando se cambia entre móvil y tableta/escritorio.
+window.matchMedia('(min-width: 768px)').addEventListener('change', evento => {
+  document.querySelectorAll('#grid-resultados .detalles-franja')
+    .forEach(detalles => {
+      detalles.open = evento.matches;
+    });
+});

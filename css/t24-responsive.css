@@ -1,0 +1,85 @@
+/* T24: estilos limitados a las seis pantallas del lote. */
+.t24-lote { overflow-x: visible; }
+.t24-lote *, .t24-lote *::before, .t24-lote *::after { box-sizing: border-box; }
+.t24-lote main, .t24-lote main :is(div,section,form), .t24-lote input, .t24-lote select { min-width: 0; }
+.t24-lote main { overflow-wrap: anywhere; }
+.t24-lote :is(button,select,input:not([type=radio]):not([type=checkbox])) { min-height:44px; }
+.t24-lote button { white-space:normal; }
+.t24-lote :is(a,button,input,select,textarea,summary,[tabindex]):focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+.t24-lote label { line-height:1.5; }
+.t24-lote label:has(input[type=radio]), .t24-lote label:has(input[type=checkbox]) { min-height:44px; }
+.t24-lote .overflow-x-auto { max-width:100%; overflow-x:auto; overscroll-behavior-x:contain; }
+.t24-lote [data-grupo] { flex-wrap:wrap; gap:8px 16px; }
+.t24-lote [data-grupo] > * { margin-left:0; }
+.t24-lote .text-slate-400 { color:#475569; }
+.t24-lote .text-amber-500 { color:#92400e; }
+.t24-lote > header { position:sticky; top:0; z-index:40; }
+.t24-lote > header > div > div:first-child { flex-shrink:0; }
+.t24-menu-boton { min-width:44px; font-size:24px; }
+.t24-inferior { display:none; }
+.t24-lote [id^=modal-].fixed { z-index:60; overflow-y:auto; }
+.t24-lote [id^=modal-].fixed > :is(div,form) { max-height:calc(100dvh - 32px); overflow-y:auto; }
+.t24-lote #perfil-correo { overflow-wrap:anywhere; min-width:0; }
+.t24-lote #perfil-correo + svg { flex-shrink:0; }
+.t24-admin label { display:block; margin-bottom:8px; font-size:14px; font-weight:600; }
+@media (max-width:767px) {
+ .t24-lote > main { padding:24px 16px calc(100px + env(safe-area-inset-bottom,0px)); }
+ .t24-lote > header > div { flex-wrap:wrap; height:auto; min-height:64px; gap:8px; padding:8px 12px; }
+ .t24-lote > header > div > div:last-child { gap:4px; }
+ .t24-lote > header > div > div:last-child > * { margin-left:0; flex-shrink:0; }
+ .t24-lote > header > div > div:first-child { gap:6px; }
+ .t24-lote > header > div > div:first-child > * { margin-left:0; }
+ .t24-lote > header > div > div:first-child > span:last-child { font-size:16px; }
+ .t24-lote #t24-menu { order:3; width:100%; max-height:55dvh; overflow-y:auto; }
+ .t24-lote #t24-menu:not(.hidden) { display:flex; flex-direction:column; gap:4px; }
+ .t24-lote #t24-menu a { margin-left:0; padding:12px; min-height:44px; }
+ .t24-lote .t24-inferior { display:flex; position:fixed; inset:auto 0 0; z-index:45; gap:4px; padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px)); background:white; border-top:1px solid #cbd5e1; }
+ .t24-lote .t24-inferior a { flex:1; min-width:0; min-height:48px; padding:12px 4px; text-align:center; font-size:12px; font-weight:600; color:#1b396a; overflow-wrap:anywhere; border-radius:8px; }
+ .t24-lote .t24-inferior a[aria-current=page] { color:white; background:#1b396a; }
+ .t24-lote [id^=modal-].fixed { padding:0; }
+ .t24-lote [id^=modal-].fixed > :is(div,form) { width:100%; max-width:none; height:100dvh; max-height:100dvh; border-radius:0; padding:24px 16px; padding-bottom:calc(24px + env(safe-area-inset-bottom,0px)); }
+ .t24-lote [id^=modal-] .grid-cols-2 { grid-template-columns:minmax(0,1fr); }
+ .t24-lote [id^=modal-] .justify-end { flex-wrap:wrap; gap:8px; }
+ .t24-lote [id^=modal-] .justify-end > button { margin-left:0; flex:1 1 130px; }
+ .t24-admin #seccion-postulaciones > div:first-child > div:last-child { max-width:100%; flex-wrap:wrap; }
+ .t24-index > div > div:first-child { min-height:0; padding:24px; }
+ .t24-index > div > div:first-child ul { display:none; }
+ .t24-index > div > div:first-child p { margin-bottom:0; }
+ .t24-index > div > div:last-child { min-height:0; border-left:0; }
+ .t24-index > div > div:last-child > div { padding:24px; }
+}
+@media (min-width:768px) and (max-width:1023px) {
+ .t24-lote > header > div { flex-wrap:wrap; height:auto; min-height:64px; gap:12px; padding-top:12px; padding-bottom:12px; }
+ .t24-lote #t24-menu { order:3; width:100%; flex-wrap:wrap; gap:8px 16px; }
+ .t24-lote #t24-menu a { margin-left:0; min-height:44px; align-content:center; }
+ .t24-postulacion main > div:first-child { flex-direction:column; }
+ .t24-postulacion main > div:first-child > div { width:100%; }
+ .t24-perfil main > .grid { grid-template-columns:minmax(0,1fr); }
+ .t24-perfil main > .grid > div { grid-column:auto; }
+ .t24-index > div > div:first-child { padding:32px; }
+ .t24-index > div > div:first-child > div:first-child { flex-wrap:wrap; gap:12px; }
+ .t24-index h1 { font-size:30px; }
+ .t24-index > div > div:last-child > div { padding:24px; }
+}
+@media (min-width:768px) { .t24-menu-boton { display:none; } }
+@media (min-width:1024px) {
+ .t24-lote #t24-menu { display:flex; position:fixed; inset:64px auto 0 0; width:220px; flex-direction:column; gap:8px; padding:24px 16px; overflow-y:auto; background:#1b396a; }
+ .t24-lote #t24-menu a { margin-left:0; padding:12px; min-height:44px; flex-shrink:0; border-radius:8px; }
+ .t24-lote > main { width:calc(100% - 220px); max-width:none; margin-left:220px; margin-right:0; padding:32px 24px; }
+ .t24-postulacion main > div:first-child { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); }
+ .t24-postulacion main > div:first-child > div { width:100%; }
+ .t24-solicitudes :is(#est-pendientes,#est-proximas,#est-historial,#lista-pendientes,#lista-proximas-asesor):not(.hidden) { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+ .t24-solicitudes :is(#est-pendientes,#est-proximas,#est-historial,#lista-pendientes,#lista-proximas-asesor) > * { margin:0; min-width:0; }
+}
+@media (prefers-reduced-motion:reduce) { .t24-lote *, .t24-lote *::before, .t24-lote *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; } }
+/* Las tarjetas se apilan internamente al ocupar una columna estrecha. */
+@media (min-width:1024px) {
+  .t24-solicitudes :is(#est-pendientes,#est-proximas,#est-historial,#lista-pendientes,#lista-proximas-asesor) > div {
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .t24-solicitudes :is(#est-pendientes,#est-proximas,#est-historial,#lista-pendientes,#lista-proximas-asesor) > div > div:last-child {
+    width:100%;
+    flex-wrap:wrap;
+  }
+}
