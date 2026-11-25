@@ -1,0 +1,23 @@
+/* Complemento exclusivo del lote de cuatro pantallas. */
+.t24-oculto-estado { display:none!important; }
+.t24-estado { width:100%; min-width:0; margin:12px 0; }
+.t24-estado [hidden], #t24-toast[hidden], #t24-error-accion[hidden] { display:none!important; }
+.t24-skeletons { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:12px 0; }
+.t24-skeleton { padding:20px; border:1px solid #cbd5e1; border-radius:12px; background:white; }
+.t24-skeleton i { display:block; height:16px; background:#e2e8f0; border-radius:5px; margin-bottom:16px; }
+.t24-skeleton i:nth-child(2) { width:75%; }
+.t24-skeleton i:last-child { height:44px; margin-bottom:0; }
+.t24-aviso { padding:16px; margin:12px 0; border:1px solid #b91c1c; border-radius:12px; background:#fef2f2; color:#991b1b; overflow-wrap:anywhere; }
+.t24-aviso button { min-height:44px; margin-top:12px; padding:10px 16px; background:#1b396a; color:white; border-radius:8px; }
+.t24-spinner { display:inline-block; width:18px; height:18px; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; vertical-align:middle; }
+#t24-toast { position:fixed; top:16px; right:16px; max-width:calc(100vw - 32px); padding:16px; background:#166534; color:white; border-radius:10px; z-index:100; }
+.t24-lote details > summary { min-height:44px; padding:12px 0; cursor:pointer; font-weight:600; }
+.t24-lote :is(.text-slate-500,.text-\[\#64748B\]) { color:#475569; }
+.t24-index > div > div { min-width:0; }
+.t24-index input,.t24-index select { max-width:100%; }
+@media(max-width:767px){.t24-skeletons {grid-template-columns:minmax(0,1fr);} .t24-lote [id^=modal-] [role=alert]{overflow-wrap:anywhere;}}
+@media(min-width:768px) and (max-width:1023px){.t24-postulacion main > div {flex-direction:column;} .t24-postulacion main > div > div {width:100%;}}
+@media(min-width:1024px){.t24-postulacion main > div {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);} .t24-postulacion main > div > div {width:100%;}}
+@media(prefers-reduced-motion:no-preference){.t24-spinner{animation:t24-spin .8s linear infinite}.t24-skeleton{animation:t24-pulse 1.4s ease-in-out infinite}}
+@keyframes t24-spin{to{transform:rotate(360deg)}}
+@keyframes t24-pulse{50%{opacity:.5}}
