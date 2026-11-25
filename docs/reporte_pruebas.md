@@ -13,7 +13,7 @@
 
 | ID | Responsable | Precondiciones | Pasos | Datos usados | Resultado esperado | Resultado obtenido | Estado | Fecha |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| ESC-001 | Edgar | Correo nuevo; incógnito y sin sesión | Completar registro, crear cuenta y comprobar panel y perfil | MARIO SALVADOR; l25200500@pachuca.tecnm.mx; matrícula 25200500; Sistemas Computacionales; semestre 7 | Cuenta creada, rol Estudiante y redirección al panel | Cuenta creada; acceso directo sin confirmación por correo; perfil con los datos y rol Estudiante | ✅ | 20/11/2026 |
+| ESC-001 | Edgar | Correo nuevo; incógnito y sin sesión | Completar registro, crear cuenta y comprobar panel y perfil | M. S.; l252005**@pachuca.tecnm.mx; matrícula 252005**; Sistemas Computacionales; semestre 7 | Cuenta creada, rol Estudiante y redirección al panel | Cuenta creada; acceso directo sin confirmación por correo; perfil con los datos y rol Estudiante | ✅ | 20/11/2026 |
 | ESC-002 | Yael | Franja libre a más de 24 h; dos estudiantes | Solicitar con uno; consultar agenda y buscar con el otro | Pendiente de registrar IDs y usuarios | Pendiente, franja Congelado y oculta al otro estudiante | Pendiente de ejecución | ⏳ | Pendiente |
 | ESC-003 | Carlos | Solicitud virtual Pendiente | Aceptar con URL y revisar como estudiante | Pendiente de registrar solicitud y URL | Aceptada y enlace visible para el estudiante | Pendiente de ejecución | ⏳ | Pendiente |
 | ESC-004 | Gamaliel Jiménez | Solicitud 102 Aceptada, prevista para el 24/11/2026 a las 10:00, aproximadamente 12 h después de la prueba | Revisar Cancelar en Próximas e intentar cancelar_asesoria(102) desde consola | Solicitud 102; franja 133 | Cancelación bloqueada con aviso del límite de 48 h | Botón deshabilitado con tooltip; RPC rechazado con HTTP 400 y mensaje «Solo se puede cancelar con al menos 48 horas de anticipación.» | ✅ | 23/11/2026 |
@@ -146,8 +146,8 @@ Permanece pendiente el intento específico sobre solicitud_asesoria.
 - [Panel del estudiante](capturas/pruebas/ESC-001_03_panel.png)
 - [Perfil y tiempos de Network](capturas/pruebas/ESC-001_04_perfil_tiempos.png)
 
-Ejecución realizada con MARIO SALVADOR,
-l25200500@pachuca.tecnm.mx.
+Ejecución realizada con M. S.,
+l252005**@pachuca.tecnm.mx.
 
 Evidencias también adjuntas en TC-29.
 
