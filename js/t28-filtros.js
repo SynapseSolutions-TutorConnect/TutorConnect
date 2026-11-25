@@ -6,7 +6,8 @@
 // 1. Tarjetas del estudiante (tarjetaCita): solo lo esencial a la vista
 //    (estado, materia, asesor/estudiante, fecha y hora, acción). La
 //    ubicación o el enlace pasan a «Ver detalle».
-// 2. Filtro por mes, estado y materia en:
+// 2. Filtro por mes, estado y materia (la materia se escribe y se
+//    busca por coincidencia, sin importar mayúsculas ni acentos) en:
 //      - Estudiante: Completadas e Historial (más reciente primero).
 //      - Asesor: Completadas.
 //    Por defecto muestra el mes más reciente, para no cargar todo el
@@ -202,6 +203,29 @@
     return { caja, select };
   }
 
+  // Campo de texto con sugerencias (datalist) para buscar la materia escribiendo
+  function crearBuscador(etiqueta, nombre, idLista) {
+    const caja = document.createElement('label');
+    caja.className = 'flex flex-col gap-1 text-xs font-semibold text-slate-600 min-w-0';
+    caja.textContent = etiqueta;
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.name = nombre;
+    input.placeholder = 'Escribe una materia…';
+    input.autocomplete = 'off';
+    input.setAttribute('list', `t28-${nombre}-${idLista}`);
+    input.className = 'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1B396A]';
+    const sugerencias = document.createElement('datalist');
+    sugerencias.id = `t28-${nombre}-${idLista}`;
+    caja.append(input, sugerencias);
+    return { caja, input, sugerencias };
+  }
+
+  // "Cálculo" → "calculo": sin acentos ni mayúsculas
+  function normalizar(texto) {
+    return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
   function llenar(select, valores, textoTodos, formato, preferido) {
     const actual = select.dataset.elegido ?? preferido;
     select.innerHTML = '';
@@ -230,18 +254,22 @@
     const unicos = (campo) => [...new Set(tarjetas.map((t) => t.dataset[campo]).filter(Boolean))];
     const meses = unicos('t28Mes').sort().reverse();
     // Por defecto: el mes más reciente (si hay más de un mes)
-    llenar(f.selects.mes, meses, 'Todos los meses', nombreMes, meses.length > 1 ? meses[0] : TODOS);
+    // Por defecto: el mes actual si tiene citas; si no, el más reciente
+    const mesActual = new Date().toLocaleDateString('en-CA').slice(0, 7);
+    llenar(f.selects.mes, meses, 'Todos los meses', nombreMes,
+      meses.length > 1 ? (meses.includes(mesActual) ? mesActual : meses[0]) : TODOS);
     llenar(f.selects.estado, unicos('t28Estado').sort(), 'Todos los estados');
-    llenar(f.selects.materia, unicos('t28Materia').sort(), 'Todas las materias');
+    f.materia.sugerencias.replaceChildren(
+      ...unicos('t28Materia').sort((a, b) => a.localeCompare(b, 'es')).map((m) => new Option(m)));
 
     const mes = f.selects.mes.value;
     const estado = f.selects.estado.value;
-    const materia = f.selects.materia.value;
+    const materia = normalizar(f.materia.input.value);
     let visibles = 0;
     tarjetas.forEach((t) => {
       const ok = (!mes || t.dataset.t28Mes === mes)
         && (!estado || t.dataset.t28Estado === estado)
-        && (!materia || t.dataset.t28Materia === materia);
+        && (!materia || normalizar(t.dataset.t28Materia).includes(materia));
       t.classList.toggle('hidden', !ok);
       if (ok) visibles += 1;
     });
@@ -269,7 +297,7 @@
     rejilla.className = 'grid grid-cols-1 sm:grid-cols-3 gap-3';
     const mes = crearSelect('Mes', 'mes');
     const estado = crearSelect('Estado', 'estado');
-    const materia = crearSelect('Materia', 'materia');
+    const materia = crearBuscador('Materia', 'materia', idLista);
     rejilla.append(mes.caja, estado.caja, materia.caja);
 
     const pie = document.createElement('div');
@@ -291,9 +319,9 @@
     // Asesor: la lista está dentro de la sección → la barra va dentro, antes de la lista.
     lista.before(barra, vacio);
 
-    const selects = { mes: mes.select, estado: estado.select, materia: materia.select };
+    const selects = { mes: mes.select, estado: estado.select };
     const f = {
-      barra, vacio, resumen, limpiar, selects, ordenar,
+      barra, vacio, resumen, limpiar, selects, materia, ordenar,
       // Asesor: la sección ya oculta la barra; solo se revisa en el estudiante
       oculta: () => panel === lista && panel.classList.contains('hidden'),
       observador: new MutationObserver(() => aplicarFiltro(idLista)),
@@ -304,8 +332,10 @@
       s.dataset.elegido = s.value;
       aplicarFiltro(idLista);
     }));
+    materia.input.addEventListener('input', () => aplicarFiltro(idLista));
     limpiar.addEventListener('click', () => {
       Object.values(selects).forEach((s) => { s.dataset.elegido = TODOS; });
+      materia.input.value = '';
       aplicarFiltro(idLista);
     });
 
