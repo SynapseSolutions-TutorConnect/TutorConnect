@@ -144,7 +144,9 @@ Permanece pendiente el intento específico sobre solicitud_asesoria.
 - [Formulario de registro](capturas/pruebas/ESC-001_01_formulario.png)
 - [Resultado del registro](capturas/pruebas/ESC-001_02_resultado.png)
 - [Panel del estudiante](capturas/pruebas/ESC-001_03_panel.png)
-- [Perfil y tiempos de Network](capturas/pruebas/ESC-001_04_perfil_tiempos.png)
+- - [Panel y tiempos de Network con datos personales ocultos](capturas/pruebas/ESC-001_04_perfil_tiempos.png)
+Las cuatro capturas de ESC-001 tienen los datos personales cubiertos
+con rectángulos sólidos. Se conservaron los resultados y tiempos visibles.
 
 Ejecución realizada con M. S.,
 l252005**@pachuca.tecnm.mx.
