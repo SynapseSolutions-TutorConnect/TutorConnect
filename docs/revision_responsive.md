@@ -4,8 +4,11 @@
 
 - Proyecto: TutorConnect.
 - Responsable: Edgar Charrez.
-- Rama: `EdgarCharrez/t24-t25`.
-- Entorno: vista previa del Codespace, puerto 8000.
+- Rama original: `EdgarCharrez/t24-t25` (PR #35 integrado a qa).
+- Rama de cierre documental: `EdgarCharrez/t24-cierre-docs`.
+- Entorno inicial: vista previa del Codespace, puerto 8000.
+- Evidencias finales: GitHub Pages, https://synapsesolutions-tutorconnect.github.io/TutorConnect/.
+- Actualización documental: 25/11/2026.
 - Navegador: Chrome con DevTools.
 - Anchos revisados: 360, 768 y 1440 px.
 - Trazabilidad: RNF-002 y capítulos 13.6 y 13.7.
@@ -44,20 +47,20 @@ funcionales de la pantalla estén terminados.
 
 | Pantalla | 360 px | 768 px | 1440 px | Observaciones |
 |---|---|---|---|---|
-| Inicio y registro | [✅](capturas/responsive/index-360.png) | [✅](capturas/responsive/index-768.png) | [✅](capturas/responsive/index-1440.png) | Se revisaron los formularios de inicio de sesión y registro. Evidencias adicionales del registro debajo de esta tabla. |
+| Inicio y registro | [✅](capturas/responsive/index-360.jpeg) | [✅](capturas/responsive/index-768.jpeg) | [✅](capturas/responsive/index-1440.jpeg) | Se revisaron los formularios de inicio de sesión y registro. Evidencias adicionales del registro debajo de esta tabla. |
 | Panel | [✅](capturas/responsive/panel-360.png) | [✅](capturas/responsive/panel-768.png) | [✅](capturas/responsive/panel-1440.png) | Barra inferior en móvil, ajuste de cabecera y distribución de escritorio. |
 | Buscar | [✅](capturas/responsive/buscar-360.png) | [✅](capturas/responsive/buscar-768.png) | [✅](capturas/responsive/buscar-1440.png) | Una columna en móvil, tres columnas y menú lateral en escritorio. |
 | Agenda | [✅](capturas/responsive/agenda-360.jpeg) | [✅](capturas/responsive/agenda-768.jpeg) | [✅](capturas/responsive/agenda-1440.jpeg) | Navegación responsive y tabla con desplazamiento interno. La confirmación de Retirar y el formulario Publicar conservan pendientes. |
-| Solicitudes | [✅](capturas/responsive/solicitudes-360.png) | [✅](capturas/responsive/solicitudes-768.png) | [✅](capturas/responsive/solicitudes-1440.png) | Se repitieron las capturas después de corregir la carga del script de sesión. |
-| Postulación | [✅](capturas/responsive/postulacion-360.png) | [✅](capturas/responsive/postulacion-768.png) | [✅](capturas/responsive/postulacion-1440.png) | Formulario y tabla revisados en los tres tamaños. |
+| Solicitudes | [✅](capturas/responsive/solicitudes-360.jpeg) | [✅](capturas/responsive/solicitudes-768.jpeg) | [✅](capturas/responsive/solicitudes-1440.jpeg) | Se repitieron las capturas después de corregir la carga del script de sesión. |
+| Postulación | [✅](capturas/responsive/postulacion-360.jpeg) | [✅](capturas/responsive/postulacion-768.jpeg) | [✅](capturas/responsive/postulacion-1440.jpeg) | Formulario y tabla revisados en los tres tamaños. |
 | Perfil | [✅](capturas/responsive/perfil-360.png) | [✅](capturas/responsive/perfil-768.png) | [✅](capturas/responsive/perfil-1440.png) | Datos y navegación revisados. Solicitar actualización de datos sigue pendiente. |
-| Administración | [✅](capturas/responsive/admin-360.png) | [✅](capturas/responsive/admin-768.png) | [✅](capturas/responsive/admin-1440.png) | Tablas de Postulaciones y Catálogo revisadas. El gráfico superior contiene valores fijos. |
+| Administración | [✅](capturas/responsive/admin-360.jpeg) | [✅](capturas/responsive/admin-768.jpeg) | [✅](capturas/responsive/admin-1440.jpeg) | Tablas de Postulaciones y Catálogo revisadas. El reporte real de asesorías de Carlos está integrado. |
 
 ### Evidencias adicionales del registro
 
-- [Registro en 360 px](capturas/responsive/index-registro-360.png)
-- [Registro en 768 px](capturas/responsive/index-registro-768.png)
-- [Registro en 1440 px](capturas/responsive/index-registro-1440.png)
+- [Registro en 360 px](capturas/responsive/index-registro-360.jpeg)
+- [Registro en 768 px](capturas/responsive/index-registro-768.jpeg)
+- [Registro en 1440 px](capturas/responsive/index-registro-1440.jpeg)
 
 ## Estados de interfaz
 
@@ -86,14 +89,14 @@ una captura.
 
 ### Inicio y registro
 
-- [Carga de carreras](capturas/responsive/index-carga.png)
-- [Error de conexión](capturas/responsive/index-error-conexion.png)
-- [Recuperación](capturas/responsive/index-recuperacion.png)
+- [Carga de carreras](capturas/responsive/index-carga.jpeg)
+- [Error de conexión](capturas/responsive/index-error-conexion.jpeg)
+- [Recuperación](capturas/responsive/index-recuperacion.jpeg)
 
 ### Panel
 
 - [Carga](capturas/responsive/panel-carga.png)
-- [Vacío](capturas/responsive/panel-recuperacion.png)
+- [Vacío: sin citas en las próximas 24 horas](capturas/responsive/panel-vacio.jpeg)
 - [Error de conexión](capturas/responsive/panel-errordeconexion.png)
 - [Recuperación](capturas/responsive/panel-recuperacion.png)
 
@@ -121,9 +124,9 @@ Se verificó el mensaje:
 
 ### Postulación
 
-- [Carga](capturas/responsive/postulacion-carga.png)
-- [Error de conexión](capturas/responsive/postulacion-error-conexion.png)
-- [Recuperación](capturas/responsive/postulacion-recuperacion.png)
+- [Carga](capturas/responsive/postulacion-carga.jpeg)
+- [Error de conexión](capturas/responsive/postulacion-error-conexion.jpeg)
+- [Recuperación](capturas/responsive/postulacion-recuperacion.jpeg)
 
 ### Perfil
 
@@ -133,11 +136,11 @@ Se verificó el mensaje:
 
 ### Administración
 
-- [Carga](capturas/responsive/admin-carga.png)
-- [Vacío por filtro sin coincidencias](capturas/responsive/admin-vacio.png)
-- [Error de conexión](capturas/responsive/admin-error-conexion.png)
-- [Recuperación](capturas/responsive/admin-recuperacion.png)
-- [Modal en móvil](capturas/responsive/admin-modal-360.png)
+- [Carga](capturas/responsive/admin-carga.jpeg)
+- [Vacío por filtro sin coincidencias](capturas/responsive/admin-vacio.jpeg)
+- [Error de conexión](capturas/responsive/admin-error-conexion.jpeg)
+- [Recuperación](capturas/responsive/admin-recuperacion.jpeg)
+- [Modal en móvil](capturas/responsive/admin-modal-360.jpeg)
 
 ## Accesibilidad y comportamiento verificados
 
@@ -223,7 +226,12 @@ de los flujos completos.
 Antes del commit final se deben volver a ejecutar las comprobaciones
 sobre los archivos que realmente están en la rama.
 
-## Pendientes y límites
+## Backlog acordado y límites
+
+Por acuerdo con el Scrum Master, los pendientes de Agenda, los estados vacíos
+restantes, la auditoría completa de accesibilidad y el flujo de actualización
+de Perfil pasan a backlog y no bloquean el cierre de T24–T25. Esto no implica
+que dichas pruebas o funciones estén aprobadas.
 
 ### Agenda
 
@@ -241,9 +249,7 @@ sobre los archivos que realmente están en la rama.
 
 ### Administración
 
-- El gráfico superior utiliza valores fijos.
-- Los indicadores estadísticos no están conectados completamente a
-  datos reales.
+- El reporte real de asesorías de Carlos está integrado; se retira la observación anterior sobre valores fijos.
 - Las pruebas de carga, vacío, error y recuperación documentadas
   corresponden a Postulaciones y Catálogo.
 
@@ -260,28 +266,32 @@ sobre los archivos que realmente están en la rama.
 
 ## Cierre y revisión
 
-- [x] Revisión reportada de las ocho pantallas en 360, 768 y 1440 px.
-- [x] Resultado `false` reportado en la comprobación de desbordamiento.
-- [x] Pruebas de carga, error y recuperación reportadas para las ocho pantallas.
-- [ ] Verificación final de nombres y enlaces de todas las capturas.
-- [ ] Evidencia de todos los estados vacíos aplicables.
-- [ ] Cierre de los pendientes de Agenda.
-- [ ] Revisión completa de accesibilidad y criterios restantes.
-- [ ] Comprobaciones finales de sintaxis y `git diff --check`.
-- [ ] Commit y push de la entrega.
-- [ ] Pull request hacia `qa`.
-- [ ] Revisión y aprobación de Carlos.
-- [ ] Validación de la definición de terminado por el Scrum Master.
+- [x] Revisión reportada de ocho pantallas en 360, 768 y 1440 px.
+- [x] Ausencia de desbordamiento horizontal reportada en esos tamaños.
+- [x] Pruebas de carga, error y recuperación reportadas.
+- [x] Comprobaciones de sintaxis y espacios realizadas en la entrega de código.
+- [x] Commit y push de la entrega original.
+- [x] PR #35 integrado a qa.
+- [x] Existencia de los 50 enlaces de la entrega anterior verificada por el Scrum Master.
+- [ ] Comprobación de enlaces y espacios del nuevo cierre documental.
+- [ ] Commit y push de las correcciones documentales de esta rama.
+- [ ] Nuevo PR de documentación hacia qa.
+- [ ] Revisión visual de las capturas sustituidas de Administración, Registro y vacío de Panel.
+- [ ] Revisión y aprobación de Carlos en el nuevo PR.
+- [ ] Validación final del Scrum Master.
 
-Commit previsto: `TC-27: responsive y estados de interfaz`.
+Los pendientes funcionales, de vacíos y de auditoría de accesibilidad se
+mantienen en el backlog acordado; no se marcan como pruebas aprobadas.
+
+Commit de cierre previsto: `TC-27: corregir evidencias y reporte responsive`.
 
 ## Conclusión
 
-La revisión permitió corregir problemas de distribución y navegación,
-además de incorporar estados de carga y errores recuperables en las
-consultas de las ocho pantallas. Las pruebas manuales reportaron ausencia
-de desbordamiento horizontal en los tres anchos definidos.
+La revisión permitió corregir problemas de distribución y navegación e
+incorporar estados de carga y errores recuperables. Las pruebas manuales
+reportaron ausencia de desbordamiento horizontal en los tres anchos.
 
-La entrega conserva pendientes funcionales, de accesibilidad y de
-evidencia descritos en este documento. Por ello, no se declara cumplimiento
-total de T24–T25 hasta completar esos puntos y obtener la revisión del equipo.
+El cierre de T24–T25 queda sujeto a la revisión de las evidencias corregidas,
+la aprobación de Carlos y la validación del Scrum Master. Los pendientes
+acordados pasan a backlog; no se declara una auditoría completa de
+accesibilidad ni la aprobación de los flujos pendientes.
