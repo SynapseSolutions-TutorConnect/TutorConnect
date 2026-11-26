@@ -422,9 +422,10 @@ function actualizarValidacionUrl() {
 // ---------------------------------------------------------------------
 // Diálogo de confirmación reutilizable (aceptar presencial / rechazar / cancelar / no realizada)
 // ---------------------------------------------------------------------
-function pedirConfirmacion(titulo, texto, textoBoton, colorBoton, accion) {
+function pedirConfirmacion(titulo, texto, textoBoton, colorBoton, accion, textoNo = 'Cancelar') {
   document.getElementById('confirmar-titulo').textContent = titulo;
   document.getElementById('confirmar-texto').textContent = texto;
+  document.getElementById('btn-no-confirmar').textContent = textoNo;
   const boton = document.getElementById('btn-si-confirmar');
   boton.textContent = textoBoton;
   boton.className = `px-5 py-2.5 text-white text-xs font-semibold rounded-lg shadow-sm transition ${colorBoton}`;
@@ -584,6 +585,7 @@ function tarjetaCita(c, papel, tipo) {
       '¿Deseas retirar esta solicitud? El horario quedará libre para otros estudiantes.',
       'Sí, retirar', 'bg-rose-600 hover:bg-rose-700',
       (b) => retirarSolicitud(c.id_solicitud_asesoria, b),
+      'No, mantener',
     );
     acciones.appendChild(boton);
   } else if (tipo === 'proxima') {
@@ -601,6 +603,7 @@ function tarjetaCita(c, papel, tipo) {
         '¿Deseas cancelar esta asesoría?',
         'Sí, cancelar', 'bg-rose-600 hover:bg-rose-700',
         (b) => cancelarCita(c.id_solicitud_asesoria, b),
+        'No, mantener',
       );
     } else {
       boton.disabled = true;
