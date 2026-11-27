@@ -3,7 +3,7 @@ window.T24 = (() => {
   const estados = new Map();
   const botones = new WeakMap();
   const porId = id => document.getElementById(id);
-  const red = e => !navigator.onLine || /fetch|network|connection|conectar/i.test(e?.message || String(e));
+  const red = e => !navigator.onLine || /fetch|network|connection|conectar|conexi[oó]n/i.test(e?.message || String(e));
   const skeleton = '<div class="t24-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></div>';
   function crearEstado(key, selector) {
     if (estados.has(key)) return estados.get(key);
@@ -34,6 +34,7 @@ window.T24 = (() => {
       return true;
     } catch (err) {
       if (turno !== e.turno) return false;
+      e.error.classList.toggle('t28-sin-conexion', red(err));
       e.error.querySelector('p').textContent = red(err)
         ? 'Error de conexión. Revisa tu conexión y pulsa Reintentar.'
         : (err?.message || 'No se pudo completar la consulta.');
@@ -73,18 +74,32 @@ window.T24 = (() => {
       aviso.innerHTML='<p role="alert"></p><button type="button">Reintentar conexión</button>';
     }
     const modal=[...document.querySelectorAll('[id^="modal-"]')].find(n=>!n.classList.contains('hidden') && n.classList.contains('fixed'));
-    const destino=modal?.firstElementChild || document.querySelector('main') || porId('seccion-login').parentElement;
-    destino.prepend(aviso);
+    const seccionIndex = document.querySelector('#seccion-login:not(.hidden), #seccion-registro:not(.hidden)');
+    const destino=modal?.firstElementChild || document.querySelector('main') || seccionIndex;
+    if (seccionIndex && destino === seccionIndex) {
+      destino.insertBefore(aviso, destino.querySelector('form'));
+    } else {
+      destino.prepend(aviso);
+    }
     aviso.querySelector('p').textContent=String(mensaje || 'No se pudo completar la operación.');
     aviso.hidden=false;
+    aviso.classList.toggle('t28-sin-conexion', red({message:mensaje}));
+    aviso.classList.remove('t28-recuperado');
+    aviso.querySelector('p').setAttribute('role','alert');
     const boton=aviso.querySelector('button');
     boton.hidden=!red({message:mensaje});
+    boton.textContent='Reintentar';
     boton.onclick=async()=>{
       cargando(boton,true);
       try {
         const r=await db.from('carrera').select('id_carrera').limit(1);
         if(r.error) throw r.error;
-        aviso.querySelector('p').textContent='Conexión recuperada. Comprueba el estado de la operación antes de volver a enviarla.';
+        aviso.classList.remove('t28-sin-conexion');
+        aviso.classList.add('t28-recuperado');
+        aviso.querySelector('p').setAttribute('role','status');
+        aviso.querySelector('p').textContent=seccionIndex?.id === 'seccion-login'
+          ? 'Conexión recuperada. Ya puedes pulsar Iniciar sesión.'
+          : 'Conexión recuperada. Comprueba el estado de la operación antes de volver a enviarla.';
         boton.hidden=true;
       } catch(e) {aviso.querySelector('p').textContent=red(e)?'No se pudo recuperar la conexión. Vuelve a intentarlo.':e.message;}
       finally{cargando(boton,false);}
@@ -167,6 +182,8 @@ cargarCarreras = async function cargarCarreras() {
 iniciarSesion=async function iniciarSesion(evento){
   evento.preventDefault();
   mostrarErrorLogin('');
+  const avisoAnterior = document.getElementById('t24-error-accion');
+  if (avisoAnterior) avisoAnterior.hidden = true;
 
   const correo = document.getElementById('login-correo').value.trim();
   const password = document.getElementById('login-password').value;
@@ -192,8 +209,7 @@ iniciarSesion=async function iniciarSesion(evento){
     }
     window.location.href = 'panel.html';
   } catch (e) {
-    mostrarErrorLogin('No se pudo conectar. Revisa tu internet.');
-    T24.error('No se pudo conectar. Revisa tu internet.');
+    T24.error('No pudimos iniciar sesión. Revisa tu conexión y pulsa Reintentar. Tus datos permanecen en el formulario.');
   } finally {
     T24.cargando(boton, false);
   }

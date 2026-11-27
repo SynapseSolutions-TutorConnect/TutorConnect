@@ -1,0 +1,53 @@
+/* TC-44/45/46: presentación compartida, sin cambiar permisos ni consultas. */
+.t28-icono { width:22px; height:22px; flex:0 0 22px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.t28-navegacion .t28-enlace:not(.hidden):not([hidden]) { display:flex; align-items:center; gap:10px; }
+.t28-navegacion .t28-enlace > span { min-width:0; overflow-wrap:anywhere; }
+header .t28-navegacion .t28-enlace { color:#e2e8f0; border:0; text-decoration:none; border-radius:10px; line-height:1.4; }
+header .t28-navegacion .t28-enlace:hover { background:#284b7c; color:#fff; }
+header .t28-navegacion .t28-enlace[aria-current=page] { background:#fff; color:#1b396a; font-weight:700; box-shadow:inset 4px 0 #38bdf8; }
+.t28-navegacion .t28-enlace:focus-visible { outline:3px solid #38bdf8; outline-offset:2px; }
+:is(.t24-inferior, .navegacion-movil, .navegacion-movil-panel).t28-navegacion .t28-enlace:focus-visible { outline-color:#1b396a; }
+.t24-solicitudes .t28-subtitulo { font-size:1rem; line-height:1.5; color:#475569; font-weight:600; }
+.t24-index .t24-aviso { padding:20px; border:1px solid #cbd5e1; border-left:4px solid #1b396a; border-radius:14px; background:#f8fafc; color:#334155; box-shadow:0 4px 12px rgb(15 23 42 / 5%); font-size:14px; line-height:1.6; }
+.t24-index .t24-aviso.t28-sin-conexion::before { content:'Sin conexión'; display:block; margin-bottom:8px; padding-left:30px; font-size:16px; font-weight:700; color:#1b396a; background:no-repeat left center / 22px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231b396a' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m3 3 18 18M2 8a16 16 0 0 1 3-2m4-2a16 16 0 0 1 13 4M5 12a11 11 0 0 1 4-2m5 0a11 11 0 0 1 5 2M8 16a6 6 0 0 1 8 0M12 20h.01'/%3E%3C/svg%3E"); }
+.t24-index .t24-aviso.t28-recuperado { border-color:#86b69c; border-left-color:#166534; background:#f0fdf4; color:#14532d; }
+.t24-index .t24-aviso button { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:44px; max-width:100%; margin-top:14px; padding:10px 16px; border-radius:9px; font-weight:600; background:#1b396a; color:#fff; }
+.t24-index .t24-aviso button[hidden] { display:none; }
+.t24-index .t24-aviso button:hover { background:#13274a; }
+.t24-index .t24-aviso button:disabled { opacity:.65; cursor:wait; }
+@media (min-width:768px) and (max-width:1023px) {
+  header .t28-navegacion .t28-enlace { padding:8px 10px; }
+}
+@media (min-width:1024px) {
+  header .t28-navegacion { border-right:1px solid #284b7c; }
+  header .t28-navegacion .t28-enlace { padding:12px; }
+}
+@media (max-width:767px) {
+  :is(.t24-inferior, .navegacion-movil, .navegacion-movil-panel).t28-navegacion .t28-enlace:not(.hidden):not([hidden]) { flex-direction:column; justify-content:center; gap:4px; padding:7px 3px; min-height:60px; line-height:1.25; }
+  :is(.t24-inferior, .navegacion-movil, .navegacion-movil-panel).t28-navegacion .t28-icono { width:20px; height:20px; flex-basis:20px; }
+  .pagina-buscar main, .pagina-panel main, .t24-lote > main { padding-bottom:calc(112px + env(safe-area-inset-bottom,0px)); }
+  .t24-index .t24-aviso { padding:16px; }
+  .t24-index .t24-aviso button { width:100%; }
+}
+
+/* TC-44: aviso flotante fuera del espacio del formulario */
+.t24-index .t24-aviso {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  margin: 0;
+  box-sizing: border-box;
+  box-shadow: 0 12px 36px rgb(15 23 42 / 22%);
+}
+
+@media (max-width: 767px) {
+  .t24-index .t24-aviso {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+}
