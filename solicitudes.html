@@ -10,6 +10,8 @@
   <script src="js/t24-navegacion.js?v=1" defer></script>
   <link rel="stylesheet" href="css/t24-cuatro.css?v=1">
 <link rel="stylesheet" href="css/t24-integracion-qa.css?v=1">
+  <link rel="stylesheet" href="css/t28-ui.css?v=1">
+  <script src="js/t28-navegacion.js?v=1" defer></script>
 </head>
 <body class="t24-lote t24-solicitudes bg-[#F8FAFC] flex min-h-screen w-full m-0 p-0 overflow-x-hidden flex-col">
 
@@ -56,7 +58,7 @@
 
     <!-- ===== PANEL 1: Mis citas del estudiante (T15b · T17 · HU-007) ===== -->
     <section id="t15b-panel-estudiante" hidden class="mb-10">
-      <h2 class="text-xl font-semibold text-slate-900">Mis citas</h2>
+      <h2 class="sr-only">Citas como estudiante</h2>
 
       <div class="flex flex-wrap gap-6 mt-4 mb-6 border-b border-slate-200" data-grupo="est">
         <button type="button" data-pestana="est-pendientes" class="pb-3 text-sm font-bold text-[#1B396A] border-b-2 border-[#1B396A] transition">
@@ -91,7 +93,7 @@
     <!-- ===== PANEL 2: Solicitudes y citas como asesor (T16 · T17 · T20) ===== -->
     <section id="t16-panel-asesor" hidden>
       <div class="mb-6">
-        <h2 class="text-xl font-semibold text-slate-900">Solicitudes recibidas como asesor</h2>
+        <h2 class="t28-subtitulo">Como asesor</h2>
         <p class="text-sm text-slate-500 mt-1">Administra tus solicitudes, cierres de sesión e historial de asesorías</p>
 
         <!-- Pestañas del asesor unificadas con el sistema data-grupo de QA -->
